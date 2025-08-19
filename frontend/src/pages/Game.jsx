@@ -353,7 +353,7 @@ export default function Game() {
     <div className="fade-in">
       <div className="flex gap-4" style={{ minHeight: 'calc(100vh - 100px)' }}>
         {/* Left Side - Typing Area */}
-        <div className="flex-1">
+        <div style={{ flex: '1' }}>
           {/* Game Header */}
           <div className="card mb-4">
             <div className="flex items-center justify-between">
@@ -362,7 +362,7 @@ export default function Game() {
                   typing test
                 </h1>
                 <p className="text-dim" style={{ fontSize: '0.875rem' }}>
-                  room: <span className="text-bright font-mono">{roomId}</span>
+                  room: <span className="text-bright">{roomId}</span>
                 </p>
               </div>
               <div className="flex items-center gap-4">
@@ -406,7 +406,7 @@ export default function Game() {
           {gameState !== 'finished' ? (
             <>
               {/* Typing Area */}
-              <div 
+              <div
                 ref={typingAreaRef}
                 tabIndex={0}
                 className="typing-test card"
@@ -427,8 +427,8 @@ export default function Game() {
               
               <div className="text-center mt-3">
                 <p className="text-dim" style={{ fontSize: '0.875rem' }}>
-                  {gameState === 'active' 
-                    ? 'type the text above' 
+                  {gameState === 'active'
+                    ? 'type the text above'
                     : 'start typing to begin the test'
                   }
                 </p>
@@ -441,7 +441,7 @@ export default function Game() {
                 test complete
               </h2>
               
-              <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+              <div className="gap-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
                 <div className="card p-4 text-center">
                   <div className="text-accent" style={{ fontSize: '3rem', fontWeight: '600' }}>
                     {finalResults?.wpm || gameStats.wpm}
@@ -475,7 +475,7 @@ export default function Game() {
               {/* Action Buttons */}
               <div className="flex gap-3 justify-center mt-6">
                 {isHost && (
-                  <button 
+                  <button
                     className="btn btn-primary"
                     onClick={restartGame}
                     style={{ minWidth: '150px' }}
@@ -483,7 +483,7 @@ export default function Game() {
                     restart game
                   </button>
                 )}
-                <button 
+                <button
                   className="btn btn-ghost"
                   onClick={returnToDashboard}
                   style={{ minWidth: '150px' }}

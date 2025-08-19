@@ -30,7 +30,7 @@
   
   /* Transitions */
   --transition-speed: 0.25s;
-  --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: cubic-bezier(0.4, 0.2, 0.2, 1);
 }
 
 /* Global Reset and Base Styles */
@@ -85,7 +85,7 @@ a:hover {
   color: var(--accent-hover);
 }
 
-/* MonkeyType Button Styles */
+/* Button Styles */
 .btn {
   font-family: var(--font-sans);
   font-size: 0.875rem;
@@ -612,6 +612,7 @@ a:hover {
 .p-3 { padding: 1.5rem; }
 .p-4 { padding: 2rem; }
 
+/* Flexbox Utilities */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
@@ -622,10 +623,17 @@ a:hover {
 .gap-3 { gap: 1.5rem; }
 .gap-4 { gap: 2rem; }
 
+.flex-1 { flex: 1; }
+
+/* Display Utilities */
 .hidden { display: none; }
 .block { display: block; }
 .inline-block { display: inline-block; }
 
+/* Width Utilities */
+.w-full { width: 100%; }
+
+/* Animations */
 .fade-in {
   animation: fadeIn var(--transition-speed) var(--transition-smooth);
 }

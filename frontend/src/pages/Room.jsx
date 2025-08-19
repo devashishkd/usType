@@ -90,7 +90,7 @@ export default function Room() {
                 room lobby
               </h1>
               <p className="text-dim" style={{ fontSize: '0.875rem' }}>
-                room id: <span className="text-bright font-mono">{roomId}</span>
+                room id: <span className="text-bright">{roomId}</span>
               </p>
             </div>
             <div className="flex gap-2">
@@ -116,7 +116,7 @@ export default function Room() {
         {/* Main Content Area */}
         <div className="flex gap-4" style={{ height: 'calc(100vh - 250px)' }}>
           {/* Left Side - Chat */}
-          <div className="flex-1 card flex flex-col" style={{ minHeight: '400px' }}>
+          <div className="card flex flex-col" style={{ minHeight: '400px', flex: '1' }}>
             <div className="mb-3">
               <h2 className="text-bright" style={{ fontSize: '1.125rem', fontWeight: '400' }}>
                 chat room
@@ -127,12 +127,14 @@ export default function Room() {
             </div>
             
             {/* Messages Area */}
-            <div 
-              className="flex-1 overflow-y-auto mb-3 p-3"
-              style={{ 
+            <div
+              className="mb-3 p-3"
+              style={{
                 backgroundColor: 'var(--sub-alt-color)',
                 borderRadius: '0.5rem',
-                maxHeight: '400px'
+                maxHeight: '400px',
+                overflowY: 'auto',
+                flex: '1'
               }}
             >
               {messages.length === 0 ? (
@@ -162,8 +164,8 @@ export default function Room() {
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                className="input flex-1"
-                style={{ fontSize: '0.875rem' }}
+                className="input"
+                style={{ fontSize: '0.875rem', flex: '1' }}
               />
               <button
                 onClick={sendMessage}
@@ -194,12 +196,12 @@ export default function Room() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="gap-2" style={{ display: 'flex', flexDirection: 'column' }}>
                 {players.map((player, index) => (
-                  <div 
+                  <div
                     key={player.username}
                     className="p-3"
-                    style={{ 
+                    style={{
                       backgroundColor: 'var(--sub-alt-color)',
                       borderRadius: '0.5rem',
                       border: index === 0 ? '1px solid var(--main-color)' : 'none'
@@ -227,7 +229,7 @@ export default function Room() {
             
             {/* Room Stats */}
             {players.length > 0 && (
-              <div className="mt-4 p-3" style={{ 
+              <div className="mt-4 p-3" style={{
                 backgroundColor: 'var(--bg-color)',
                 borderRadius: '0.5rem'
               }}>

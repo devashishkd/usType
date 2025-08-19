@@ -7,16 +7,13 @@ import dotenv from "dotenv";
 const router = express.Router();
 dotenv.config();
 
-// Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 };
 
-// @desc    Register new user
-// @route   POST /api/auth/register
-// @access  Public
+
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
   
@@ -48,9 +45,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// @desc    Authenticate user
-// @route   POST /api/auth/login
-// @access  Public
+
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   
@@ -72,9 +67,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// @desc    Get user data
-// @route   GET /api/auth/me
-// @access  Private
+
 router.get("/me", protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);

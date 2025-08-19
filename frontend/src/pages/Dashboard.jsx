@@ -85,7 +85,7 @@ export default function Dashboard() {
       {/* Error Message */}
       {error && (
         <div
-          className="mb-8 p-4 text-center"
+          className="mb-4 p-4 text-center"
           style={{
             backgroundColor: "var(--error-extra-color)",
             borderRadius: "0.5rem",
@@ -98,7 +98,7 @@ export default function Dashboard() {
           {error}
         </div>
       )}
-
+      
       {/* Create/Join Room Section */}
       <div className="flex gap-4 mb-8" style={{ flexWrap: "wrap" }}>
         {/* Create Room Card */}
@@ -119,9 +119,9 @@ export default function Dashboard() {
               value={newRoom}
               onChange={(e) => setNewRoom(e.target.value)}
               onKeyPress={(e) => handleKeyPress(e, createRoom)}
-              className="input flex-1"
+              className="input"
               disabled={loading}
-              style={{ fontSize: "0.875rem", padding: "0.75rem" }}
+              style={{ fontSize: "0.875rem", padding: "0.75rem", flex: "1" }}
             />
             <button
               onClick={createRoom}
@@ -139,7 +139,7 @@ export default function Dashboard() {
             create a new room and invite others
           </p>
         </div>
-
+        
         {/* Join Room Card */}
         <div
           className="card"
@@ -158,9 +158,9 @@ export default function Dashboard() {
               value={joinName}
               onChange={(e) => setJoinName(e.target.value)}
               onKeyPress={(e) => handleKeyPress(e, joinRoom)}
-              className="input flex-1"
+              className="input"
               disabled={loading}
-              style={{ fontSize: "0.875rem", padding: "0.75rem" }}
+              style={{ fontSize: "0.875rem", padding: "0.75rem", flex: "1" }}
             />
             <button
               onClick={joinRoom}
@@ -208,11 +208,12 @@ export default function Dashboard() {
             </svg>
           </button>
         </div>
-
+        
         {rooms.length > 0 ? (
           <div
-            className="grid gap-4"
+            className="gap-4"
             style={{
+              display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
             }}
           >
@@ -220,7 +221,7 @@ export default function Dashboard() {
               <button
                 key={room._id}
                 onClick={() => navigate(`/room/${room._id}`)}
-                className="card text-left hover:border-color"
+                className="card text-left"
                 style={{
                   cursor: "pointer",
                   transition:

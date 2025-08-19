@@ -13,7 +13,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-color)' }}>
       <div className="container">
         <nav className="nav">
           <div className="nav-brand">
@@ -27,12 +27,12 @@ export default function App() {
           <div className="nav-links">
             {username ? (
               <>
-                <button 
+                <button
                   onClick={() => navigate('/dashboard')}
                   className="nav-link"
-                  style={{ 
-                    background: 'none', 
-                    border: 'none', 
+                  style={{
+                    background: 'none',
+                    border: 'none',
                     cursor: 'pointer',
                     font: 'inherit'
                   }}
@@ -47,9 +47,9 @@ export default function App() {
                 <button
                   onClick={logout}
                   className="nav-link"
-                  style={{ 
-                    background: 'none', 
-                    border: 'none', 
+                  style={{
+                    background: 'none',
+                    border: 'none',
                     cursor: 'pointer',
                     font: 'inherit'
                   }}
@@ -59,12 +59,12 @@ export default function App() {
               </>
             ) : (
               <>
-                <button 
+                <button
                   onClick={() => navigate('/login')}
                   className="nav-link"
-                  style={{ 
-                    background: 'none', 
-                    border: 'none', 
+                  style={{
+                    background: 'none',
+                    border: 'none',
                     cursor: 'pointer',
                     font: 'inherit'
                   }}
@@ -72,12 +72,12 @@ export default function App() {
                   login
                 </button>
                 <span className="text-dim">|</span>
-                <button 
+                <button
                   onClick={() => navigate('/signup')}
                   className="nav-link"
-                  style={{ 
-                    background: 'none', 
-                    border: 'none', 
+                  style={{
+                    background: 'none',
+                    border: 'none',
                     cursor: 'pointer',
                     font: 'inherit'
                   }}

@@ -43,7 +43,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ paddingTop: '4rem' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: '4rem' }}>
       <div className="w-full max-w-md fade-in">
         <div className="text-center mb-4">
           <h1 className="text-accent mb-2" style={{ fontSize: '2.5rem', fontWeight: '300' }}>
@@ -91,7 +91,7 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="mb-3 p-2 text-center" style={{ 
+            <div className="mb-3 p-2 text-center" style={{
               backgroundColor: 'var(--error-extra-color)',
               borderRadius: '0.5rem',
               color: 'var(--error-color)',
@@ -105,11 +105,12 @@ export default function Login() {
             type="submit"
             className="btn btn-primary w-full mb-3"
             disabled={loading}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
-              gap: '0.5rem'
+              gap: '0.5rem',
+              width: '100%'
             }}
           >
             {loading ? (
@@ -134,16 +135,16 @@ export default function Login() {
 
         <div className="text-center mt-4">
           <div className="flex items-center justify-center gap-2">
-            <div style={{ 
-              height: '1px', 
-              width: '60px', 
-              backgroundColor: 'var(--sub-alt-color)' 
+            <div style={{
+              height: '1px',
+              width: '60px',
+              backgroundColor: 'var(--sub-alt-color)'
             }}></div>
             <span className="text-dim" style={{ fontSize: '0.75rem' }}>or</span>
-            <div style={{ 
-              height: '1px', 
-              width: '60px', 
-              backgroundColor: 'var(--sub-alt-color)' 
+            <div style={{
+              height: '1px',
+              width: '60px',
+              backgroundColor: 'var(--sub-alt-color)'
             }}></div>
           </div>
           

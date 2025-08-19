@@ -47,9 +47,9 @@ export default function LeaderboardPanel({ players, currentUser }) {
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="gap-3" style={{ display: 'flex', flexDirection: 'column' }}>
             {sortedPlayers.map((player, index) => (
-              <div 
+              <div
                 key={player.username}
                 className="leaderboard-item"
                 style={{
@@ -62,9 +62,9 @@ export default function LeaderboardPanel({ players, currentUser }) {
                 {/* Player Info Row */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div 
+                    <div
                       className={`leaderboard-rank ${getRankClass(index)}`}
-                      style={{ 
+                      style={{
                         fontSize: '1.25rem',
                         minWidth: '35px',
                         textAlign: 'center'
@@ -97,9 +97,9 @@ export default function LeaderboardPanel({ players, currentUser }) {
                 
                 {/* Progress Bar */}
                 <div className="progress-container">
-                  <div 
+                  <div
                     className="progress-bar-mini"
-                    style={{ 
+                    style={{
                       height: '10px',
                       backgroundColor: 'var(--sub-color)',
                       borderRadius: '5px',
@@ -108,13 +108,13 @@ export default function LeaderboardPanel({ players, currentUser }) {
                       width: '100%'
                     }}
                   >
-                    <div 
+                    <div
                       className="progress-fill-mini"
-                      style={{ 
+                      style={{
                         width: `${player.progress || 0}%`,
                         height: '100%',
-                        backgroundColor: index === 0 ? 'var(--main-color)' : 
-                                       index === 1 ? 'var(--text-color)' : 
+                        backgroundColor: index === 0 ? 'var(--main-color)' :
+                                       index === 1 ? 'var(--text-color)' :
                                        index === 2 ? '#cd7f32' : 'var(--sub-alt-color)',
                         transition: 'width 0.3s ease',
                         borderRadius: '5px'
@@ -141,14 +141,14 @@ export default function LeaderboardPanel({ players, currentUser }) {
         
         {/* Room Statistics */}
         {sortedPlayers.length > 0 && (
-          <div className="mt-4 p-3" style={{ 
+          <div className="mt-4 p-3" style={{
             backgroundColor: 'var(--bg-color)',
             borderRadius: '0.5rem'
           }}>
             <h3 className="text-bright mb-2" style={{ fontSize: '0.875rem' }}>
               room statistics
             </h3>
-            <div className="space-y-1">
+            <div className="gap-1" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="flex justify-between text-dim" style={{ fontSize: '0.75rem' }}>
                 <span>average progress</span>
                 <span className="text-bright">
