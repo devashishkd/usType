@@ -566,7 +566,7 @@ io.on("connection", (socket) => {
       
       // Remove user from database participants list
       try {
-        const room = await Room.findById(r);
+        const room = await Room.findOne({ roomId: r });
         if (room) {
           // Find the user in the room's participants
           const user = await User.findOne({ username });
@@ -585,23 +585,39 @@ io.on("connection", (socket) => {
       
       const playersMap = await gameState.getRoomPlayers(r);
       if (playersMap && playersMap.has(socket.id)) {
-        playersMap.delete(socket.id);
-        
         // Check if leaving player was host
         const hostId = await gameState.getRoomHost(r);
-        if (hostId === socket.id && playersMap.size > 0) {
-          const newHostId = playersMap.keys().next().value;
-          await gameState.setRoomHost(r, newHostId);
-          io.to(r).emit("host:changed", { newHostId });
-        }
+        const isHost = hostId === socket.id;
         
-        // Update or clean up room
-        if (playersMap.size === 0) {
+        // If host is leaving, delete the room and redirect all players
+        if (isHost) {
+          console.log(`👑 Host leaving room ${r}, deleting room and redirecting all players`);
+          
+          // Delete room from database
+          try {
+            await Room.deleteOne({ roomId: r });
+            console.log(`🗑️ Room ${r} deleted from database`);
+          } catch (dbError) {
+            console.error('Database error when deleting room:', dbError);
+          }
+          
+          // Notify all players to redirect to dashboard
+          io.to(r).emit("room:deleted", { roomId: r });
+          
+          // Clean up room state
           await gameState.deleteRoom(r);
         } else {
-          await gameState.setRoomPlayers(r, playersMap);
-          const sortedPlayers = await getSortedPlayers(r);
-          io.to(r).emit("players:update", sortedPlayers);
+          // Regular player leaving
+          playersMap.delete(socket.id);
+          
+          // Update or clean up room
+          if (playersMap.size === 0) {
+            await gameState.deleteRoom(r);
+          } else {
+            await gameState.setRoomPlayers(r, playersMap);
+            const sortedPlayers = await getSortedPlayers(r);
+            io.to(r).emit("players:update", sortedPlayers);
+          }
         }
       }
       
@@ -621,31 +637,40 @@ io.on("connection", (socket) => {
       if (currentRoom) {
         const playersMap = await gameState.getRoomPlayers(currentRoom);
         if (playersMap && playersMap.has(socket.id)) {
-          playersMap.delete(socket.id);
-          
           // Check if disconnected player was host
           const hostId = await gameState.getRoomHost(currentRoom);
-          if (hostId === socket.id) {
-            console.log(`👑 Host left room ${currentRoom}, clearing timers`);
-            gameState.clearTimer(currentRoom);
-            
-            // Assign new host if players remain
-            if (playersMap.size > 0) {
-              const newHostId = playersMap.keys().next().value;
-              await gameState.setRoomHost(currentRoom, newHostId);
-              io.to(currentRoom).emit("host:changed", { newHostId });
-              console.log(`👑 New host assigned: ${newHostId}`);
-            }
-          }
+          const isHost = hostId === socket.id;
           
-          // Clean up or update room
-          if (playersMap.size === 0) {
-            console.log(`🧹 Cleaning up empty room ${currentRoom}`);
+          // If host disconnects, delete the room and redirect all players
+          if (isHost) {
+            console.log(`👑 Host disconnected from room ${currentRoom}, deleting room and redirecting all players`);
+            
+            // Delete room from database
+            try {
+              await Room.deleteOne({ roomId: currentRoom });
+              console.log(`🗑️ Room ${currentRoom} deleted from database`);
+            } catch (dbError) {
+              console.error('Database error when deleting room:', dbError);
+            }
+            
+            // Notify all players to redirect to dashboard
+            io.to(currentRoom).emit("room:deleted", { roomId: currentRoom });
+            
+            // Clean up room state
             await gameState.deleteRoom(currentRoom);
           } else {
-            await gameState.setRoomPlayers(currentRoom, playersMap);
-            const sortedPlayers = await getSortedPlayers(currentRoom);
-            io.to(currentRoom).emit("players:update", sortedPlayers);
+            // Regular player disconnecting
+            playersMap.delete(socket.id);
+            
+            // Clean up or update room
+            if (playersMap.size === 0) {
+              console.log(`🧹 Cleaning up empty room ${currentRoom}`);
+              await gameState.deleteRoom(currentRoom);
+            } else {
+              await gameState.setRoomPlayers(currentRoom, playersMap);
+              const sortedPlayers = await getSortedPlayers(currentRoom);
+              io.to(currentRoom).emit("players:update", sortedPlayers);
+            }
           }
         }
       }

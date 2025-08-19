@@ -39,19 +39,27 @@ export default function Room() {
     // Listen for game start - redirect to game page
     socket.on("game:start", ({ text, duration }) => {
       // Store game data in localStorage for the Game page
-      localStorage.setItem("gameData", JSON.stringify({ 
-        roomId, 
-        text, 
+      localStorage.setItem("gameData", JSON.stringify({
+        roomId,
+        text,
         duration,
         startTime: Date.now()
       }));
       navigate(`/game/${roomId}`);
     });
     
+    // Listen for room deletion - redirect to dashboard
+    socket.on("room:deleted", ({ roomId: deletedRoomId }) => {
+      if (deletedRoomId === roomId) {
+        navigate('/dashboard');
+      }
+    });
+    
     return () => {
       socket.off("players:update");
       socket.off("message");
       socket.off("game:start");
+      socket.off("room:deleted");
     };
   }, [roomId, username, navigate]);
   
@@ -92,6 +100,16 @@ export default function Room() {
               <p className="text-dim" style={{ fontSize: '0.875rem' }}>
                 room id: <span className="text-bright">{roomId}</span>
               </p>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(roomId);
+                  // Optional: show a "copied" feedback
+                }}
+                className="btn btn-primary ml-2"
+                style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
+              >
+                copy id
+              </button>
             </div>
             <div className="flex gap-2">
               {isHost && (

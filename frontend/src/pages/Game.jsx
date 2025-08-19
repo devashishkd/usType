@@ -135,12 +135,18 @@ export default function Game() {
     socket.on("players:update", playersUpdateHandler);
     socket.on("game:restart", gameRestartHandler);
     socket.on("game:stopTyping", gameStopTypingHandler);
+    socket.on("room:deleted", ({ roomId: deletedRoomId }) => {
+      if (deletedRoomId === roomId) {
+        navigate('/dashboard');
+      }
+    });
     
     // Cleanup function
     return () => {
       socket.off("players:update", playersUpdateHandler);
       socket.off("game:restart", gameRestartHandler);
       socket.off("game:stopTyping", gameStopTypingHandler);
+      socket.off("room:deleted");
       
       // Clear timer on unmount
       if (timerIntervalRef.current) {
@@ -367,12 +373,23 @@ export default function Game() {
               </div>
               <div className="flex items-center gap-4">
                 {gameState !== 'finished' && (
-                  <div className="text-center">
-                    <div className="text-accent" style={{ fontSize: '2rem', fontWeight: '600' }}>
-                      {timeLeft}
+                  <>
+                    <button
+                      className="btn btn-ghost"
+                      onClick={() => {
+                        socket.emit("leaveRoom", { roomId, username });
+                        navigate('/dashboard');
+                      }}
+                    >
+                      leave room
+                    </button>
+                    <div className="text-center">
+                      <div className="text-accent" style={{ fontSize: '2rem', fontWeight: '600' }}>
+                        {timeLeft}
+                      </div>
+                      <div className="text-dim" style={{ fontSize: '0.75rem' }}>seconds</div>
                     </div>
-                    <div className="text-dim" style={{ fontSize: '0.75rem' }}>seconds</div>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
@@ -474,15 +491,23 @@ export default function Game() {
               
               {/* Action Buttons */}
               <div className="flex gap-3 justify-center mt-6">
-                {isHost && (
-                  <button
-                    className="btn btn-primary"
-                    onClick={restartGame}
-                    style={{ minWidth: '150px' }}
-                  >
-                    restart game
-                  </button>
-                )}
+                <button
+                  className="btn btn-primary"
+                  onClick={restartGame}
+                  style={{ minWidth: '150px' }}
+                >
+                  restart game
+                </button>
+                <button
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    socket.emit("leaveRoom", { roomId, username });
+                    navigate('/dashboard');
+                  }}
+                  style={{ minWidth: '150px' }}
+                >
+                  leave room
+                </button>
                 <button
                   className="btn btn-ghost"
                   onClick={returnToDashboard}
@@ -495,7 +520,7 @@ export default function Game() {
               {!isHost && (
                 <div className="text-center mt-3">
                   <p className="text-dim" style={{ fontSize: '0.75rem' }}>
-                    waiting for host to restart the game
+                    note: only the host can actually restart the game
                   </p>
                 </div>
               )}

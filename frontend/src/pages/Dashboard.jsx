@@ -24,19 +24,14 @@ export default function Dashboard() {
   }, []);
 
   const createRoom = async () => {
-    if (!newRoom.trim()) {
-      setError("room name is required");
-      return;
-    }
-
     setLoading(true);
     try {
       const { data } = await api.post("/rooms", {
-        name: newRoom,
         text: "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.",
       });
-      setNewRoom("");
       setRooms([data, ...rooms]);
+      // Redirect to the created room
+      navigate(`/room/${data.roomId}`);
       setError(null);
     } catch (e) {
       setError(e.response?.data?.message || "cannot create room");
@@ -62,8 +57,8 @@ export default function Dashboard() {
         return;
       }
 
-      await api.put(`/rooms/${room._id}/join`);
-      navigate(`/room/${room._id}`);
+      await api.put(`/rooms/${room.roomId}/join`);
+      navigate(`/room/${room.roomId}`);
     } catch (e) {
       setError(e.response?.data?.message || "cannot join room");
     } finally {
@@ -113,23 +108,13 @@ export default function Dashboard() {
             create room
           </h3>
           <div className="flex gap-3 mb-3">
-            <input
-              type="text"
-              placeholder="room name"
-              value={newRoom}
-              onChange={(e) => setNewRoom(e.target.value)}
-              onKeyPress={(e) => handleKeyPress(e, createRoom)}
-              className="input"
-              disabled={loading}
-              style={{ fontSize: "0.875rem", padding: "0.75rem", flex: "1" }}
-            />
             <button
               onClick={createRoom}
-              disabled={!newRoom.trim() || loading}
+              disabled={loading}
               className="btn btn-primary"
-              style={{ minWidth: "80px", padding: "0.75rem 1rem" }}
+              style={{ minWidth: "80px", padding: "0.75rem 1rem", flex: "1" }}
             >
-              create
+              create room
             </button>
           </div>
           <p
@@ -139,6 +124,7 @@ export default function Dashboard() {
             create a new room and invite others
           </p>
         </div>
+        
         
         {/* Join Room Card */}
         <div
@@ -219,8 +205,8 @@ export default function Dashboard() {
           >
             {rooms.map((room) => (
               <button
-                key={room._id}
-                onClick={() => navigate(`/room/${room._id}`)}
+                key={room.roomId}
+                onClick={() => navigate(`/room/${room.roomId}`)}
                 className="card text-left"
                 style={{
                   cursor: "pointer",
