@@ -43,27 +43,35 @@ export default function Login() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: '4rem' }}>
-      <div className="w-full max-w-md fade-in">
-        <div className="text-center mb-4">
-          <h1 className="text-accent mb-2" style={{ fontSize: '2.5rem', fontWeight: '300' }}>
-            login
-          </h1>
-          <p className="text-dim">enter your credentials to continue</p>
+    <div className="login-page">
+      <div className="login-container fade-in">
+        <div className="login-header">
+          <div className="logo">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </div>
+          <h1 className="login-title">Welcome Back</h1>
+          <p className="login-subtitle">Enter your credentials to continue</p>
         </div>
 
-        <form onSubmit={onSubmit} className="card">
-          <div className="mb-3">
-            <label htmlFor="username" className="block text-dim mb-1" style={{ fontSize: '0.875rem' }}>
-              username
+        <form onSubmit={onSubmit} className="login-form">
+          <div className="input-group">
+            <label htmlFor="username" className="input-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Username
             </label>
             <input
               id="username"
               name="username"
               type="text"
               required
-              className="input"
-              placeholder="enter username"
+              className="input-field"
+              placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={loading}
@@ -72,17 +80,21 @@ export default function Login() {
             />
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-dim mb-1" style={{ fontSize: '0.875rem' }}>
-              password
+          <div className="input-group">
+            <label htmlFor="password" className="input-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              Password
             </label>
             <input
               id="password"
               name="password"
               type="password"
               required
-              className="input"
-              placeholder="enter password"
+              className="input-field"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
@@ -91,69 +103,52 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="mb-3 p-2 text-center" style={{
-              backgroundColor: 'var(--error-extra-color)',
-              borderRadius: '0.5rem',
-              color: 'var(--error-color)',
-              fontSize: '0.875rem'
-            }}>
+            <div className="error-message slide-up">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            className="btn btn-primary w-full mb-3"
+            className="login-button"
             disabled={loading}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              width: '100%'
-            }}
           >
             {loading ? (
               <>
                 <span className="loading"></span>
-                <span>logging in...</span>
+                <span>Logging in...</span>
               </>
             ) : (
-              'sign in'
+              'Sign In'
             )}
           </button>
 
-          <div className="text-center">
-            <span className="text-dim" style={{ fontSize: '0.875rem' }}>
-              don't have an account?{' '}
+          <div className="login-footer">
+            <span className="text-dim">
+              Don't have an account?{' '}
             </span>
-            <Link to="/signup" className="text-accent" style={{ fontSize: '0.875rem' }}>
-              register
+            <Link to="/signup" className="text-accent">
+              Register
             </Link>
           </div>
         </form>
 
-        <div className="text-center mt-4">
-          <div className="flex items-center justify-center gap-2">
-            <div style={{
-              height: '1px',
-              width: '60px',
-              backgroundColor: 'var(--sub-alt-color)'
-            }}></div>
-            <span className="text-dim" style={{ fontSize: '0.75rem' }}>or</span>
-            <div style={{
-              height: '1px',
-              width: '60px',
-              backgroundColor: 'var(--sub-alt-color)'
-            }}></div>
+        <div className="guest-section">
+          <div className="divider">
+            <span className="divider-text">or</span>
           </div>
           
           <button
             onClick={() => navigate('/dashboard')}
-            className="btn btn-ghost mt-3"
-            style={{ fontSize: '0.875rem' }}
+            className="guest-button"
+            disabled={loading}
           >
-            continue as guest
+            Continue as Guest
           </button>
         </div>
       </div>
