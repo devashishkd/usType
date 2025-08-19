@@ -491,13 +491,15 @@ export default function Game() {
               
               {/* Action Buttons */}
               <div className="flex gap-3 justify-center mt-6">
-                <button
-                  className="btn btn-primary"
-                  onClick={restartGame}
-                  style={{ minWidth: '150px' }}
-                >
-                  restart game
-                </button>
+                {isHost && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={restartGame}
+                    style={{ minWidth: '150px' }}
+                  >
+                    restart game
+                  </button>
+                )}
                 <button
                   className="btn btn-ghost"
                   onClick={() => {
@@ -520,7 +522,7 @@ export default function Game() {
               {!isHost && (
                 <div className="text-center mt-3">
                   <p className="text-dim" style={{ fontSize: '0.75rem' }}>
-                    note: only the host can actually restart the game
+                    waiting for host to restart the game
                   </p>
                 </div>
               )}
