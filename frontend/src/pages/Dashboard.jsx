@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
+import axios from "axios"
 
 export default function Dashboard() {
   const [rooms, setRooms] = useState([]);
@@ -12,7 +12,7 @@ export default function Dashboard() {
 
   const load = async () => {
     try {
-      const { data } = await api.get("/rooms");
+      const { data } = await axios.get("https://itypex.onrender.com/api/rooms");
       setRooms(data);
     } catch (e) {
       setError(e.response?.data?.message || "cannot load rooms");
@@ -26,7 +26,7 @@ export default function Dashboard() {
   const createRoom = async () => {
     setLoading(true);
     try {
-      const { data } = await api.post("/rooms", {
+      const { data } = await axios.post("https://itypex.onrender.com/api/rooms", {
         text: "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.",
       });
       setRooms([data, ...rooms]);
@@ -48,7 +48,7 @@ export default function Dashboard() {
 
     setLoading(true);
     try {
-      const { data: allRooms } = await api.get("/rooms");
+      const { data: allRooms } = await axios.get("https://itypex.onrender.com/api/rooms");
       const room = allRooms.find((r) => r.name === joinName);
 
       if (!room) {
@@ -57,7 +57,7 @@ export default function Dashboard() {
         return;
       }
 
-      await api.put(`/rooms/${room.roomId}/join`);
+      await axios.put(`https://itypex.onrender.com/api/rooms/${room.roomId}/join`);
       navigate(`/room/${room.roomId}`);
     } catch (e) {
       setError(e.response?.data?.message || "cannot join room");
