@@ -19,7 +19,7 @@ const app = express();
 
 // Enhanced CORS configuration
 const allowedOrigins = [
-  "http://localhost:5173",   // local dev frontend
+  "https://itypex.onrender.com/",   // local dev frontend
   process.env.CLIENT_URL,    // deployed frontend (set in Render env vars later)
 ].filter(Boolean);
 
