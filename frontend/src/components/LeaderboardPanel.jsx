@@ -88,6 +88,18 @@ export default function LeaderboardPanel({ players, currentUser }) {
                   <div className="flex gap-3">
                     <div className="text-center">
                       <div className="text-bright" style={{ fontSize: '1rem', fontWeight: '600' }}>
+                        {player.wpm || 0}
+                      </div>
+                      <div className="text-dim" style={{ fontSize: '0.625rem' }}>WPM</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-bright" style={{ fontSize: '1rem', fontWeight: '600' }}>
+                        {player.accuracy || 0}%
+                      </div>
+                      <div className="text-dim" style={{ fontSize: '0.625rem' }}>ACC</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-bright" style={{ fontSize: '1rem', fontWeight: '600' }}>
                         {player.progress || 0}%
                       </div>
                       <div className="text-dim" style={{ fontSize: '0.625rem' }}>PROGRESS</div>
