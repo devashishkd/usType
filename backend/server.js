@@ -18,12 +18,28 @@ connectDB();
 const app = express();
 
 // Enhanced CORS configuration
-app.use(cors({ 
-  origin: process.env.CLIENT_URL,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+const allowedOrigins = [
+  "http://localhost:5173",   // local dev frontend
+  process.env.CLIENT_URL,    // deployed frontend (set in Render env vars later)
+].filter(Boolean);
+
+// Apply CORS
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like Postman) or from allowedOrigins
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+// Explicitly handle preflight requests
+app.options("*", cors());
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
