@@ -24,7 +24,9 @@ export default function Login() {
     
     setLoading(true);
     try {
-      const { data } = await api.post("api/auth/login", { username, password });
+       const { data } = await axios.post(`https://typex-jygr.onrender.com/api/auth/login`, {
+        username,
+        password, });
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
       navigate("/dashboard");
