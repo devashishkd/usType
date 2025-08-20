@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api";
+import axios from "axios";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
@@ -37,7 +37,8 @@ export default function Signup() {
     
     setLoading(true);
     try {
-      const { data } = await api.post("/auth/register", { username, password });
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
+      const { data } = await axios.post(`${baseURL}/auth/register`, { username, password });
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
       navigate("/dashboard");

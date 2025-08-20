@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
+import axios from "axios";
 
 export default function Dashboard() {
   const [rooms, setRooms] = useState([]);
@@ -12,7 +12,10 @@ export default function Dashboard() {
 
   const load = async () => {
     try {
-      const { data } = await api.get("/rooms");
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
+      const token = localStorage.getItem("token");
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const { data } = await axios.get(`${baseURL}/rooms`, config);
       setRooms(data);
     } catch (e) {
       setError(e.response?.data?.message || "cannot load rooms");
@@ -26,9 +29,12 @@ export default function Dashboard() {
   const createRoom = async () => {
     setLoading(true);
     try {
-      const { data } = await api.post("/rooms", {
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
+      const token = localStorage.getItem("token");
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const { data } = await axios.post(`${baseURL}/rooms`, {
         text: "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.",
-      });
+      }, config);
       setRooms([data, ...rooms]);
       // Redirect to the created room
       navigate(`/room/${data.roomId}`);
@@ -48,7 +54,10 @@ export default function Dashboard() {
 
     setLoading(true);
     try {
-      const { data: allRooms } = await api.get("/rooms");
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
+      const token = localStorage.getItem("token");
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const { data: allRooms } = await axios.get(`${baseURL}/rooms`, config);
       const room = allRooms.find((r) => r.name === joinName);
 
       if (!room) {
@@ -57,7 +66,7 @@ export default function Dashboard() {
         return;
       }
 
-      await api.put(`/rooms/${room.roomId}/join`);
+      await axios.put(`${baseURL}/rooms/${room.roomId}/join`, {}, config);
       navigate(`/room/${room.roomId}`);
     } catch (e) {
       setError(e.response?.data?.message || "cannot join room");

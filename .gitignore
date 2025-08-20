@@ -20,36 +20,3 @@ log/
 .env.development.local
 .env.test.local
 .env.production.local
-
-# Build outputs
-dist/
-build/
-.cache/
-.next/
-out/
-
-# Vite
-.vite/
-vite.config.ts.timestamp-*
-
-# Coverage reports
-coverage/
-
-# Editor/IDE
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Redis / Mongo data (if stored locally in project folder)
-dump.rdb
-*.rdb
-*.aof
-data/

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api";
+import axios from "axios";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -24,7 +24,9 @@ export default function Login() {
     
     setLoading(true);
     try {
-      const { data } = await api.post("/auth/login", { username, password });
+      console.log("Logging in with:", { username, password });
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
+      const { data } = await axios.post(`${baseURL}/auth/login`, { username, password });
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
       navigate("/dashboard");
