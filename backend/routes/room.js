@@ -50,7 +50,7 @@ router.post("/", protect, async (req, res) => {
 // @desc    Get all rooms
 // @route   GET /api/room
 // @access  Public
-router.get("/", async (req, res) => {
+router.get("/",protect, async (req, res) => {
   try {
     const rooms = await Room.find({}).populate("participants", "username");
     res.json(rooms);
@@ -62,7 +62,7 @@ router.get("/", async (req, res) => {
 // @desc    Get room by ID
 // @route   GET /api/room/:id
 // @access  Public
-router.get("/:id", async (req, res) => {
+router.get("/:id",protect, async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.id }).populate("participants", "username");
     

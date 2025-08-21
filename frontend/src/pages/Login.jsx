@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -8,11 +9,14 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const {user, setUser} = useContext(AuthContext);
+  // Configure axios to include credentials (cookies) with requests
+  axios.defaults.withCredentials = true;
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    
+
     if (!username.trim()) {
       setError("username is required");
       return;
@@ -21,18 +25,23 @@ export default function Login() {
       setError("password is required");
       return;
     }
-    
+
     setLoading(true);
     try {
-      console.log("Logging in with:", { username, password });
       const baseURL = import.meta.env.VITE_API_URL;
-      const { data } = await axios.post(`${baseURL}/auth/login`, { username, password });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("username", data.username);
+      const { data } = await axios.post(`${baseURL}/auth/login`, {
+        username,
+        password,
+      });
+
+      setUser(data);
+      console.log("here is the user: ", user);
+
       navigate("/dashboard");
+    
     } catch (e) {
-      console.error("Login error:", e);
       if (e.response) {
+        
         setError(e.response.data.message || e.response.statusText);
       } else if (e.request) {
         setError("network error: unable to reach server");
@@ -45,114 +54,180 @@ export default function Login() {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container fade-in">
-        <div className="login-header">
-          <div className="logo">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-          </div>
-          <h1 className="login-title">Welcome Back</h1>
-          <p className="login-subtitle">Enter your credentials to continue</p>
+    <div style={{
+      minHeight: '68vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1rem',
+      backgroundColor: 'var(--bg-color)'
+    }}>
+      <div style={{ maxWidth: '380px', width: '100%' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h1 style={{ 
+            color: 'var(--text-color)', 
+            fontSize: '1.75rem', 
+            fontFamily: 'var(--font-sans)',
+            fontWeight: '500',
+            marginBottom: '0.5rem',
+            letterSpacing: '-0.01em'
+          }}>
+            login
+          </h1>
         </div>
 
-        <form onSubmit={onSubmit} className="login-form">
-          <div className="input-group">
-            <label htmlFor="username" className="input-label">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              Username
-            </label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              required
-              className="input-field"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={loading}
-              autoComplete="username"
-              autoFocus
-            />
-          </div>
+        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <input
+            type="text"
+            placeholder="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={loading}
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '1rem',
+              padding: '0.875rem 1rem',
+              backgroundColor: 'transparent',
+              color: 'var(--text-color)',
+              border: '2px solid var(--sub-color)',
+              borderRadius: '0.5rem',
+              outline: 'none',
+              transition: 'all 0.25s ease',
+              width: '100%'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#0ea5e9'}
+            onBlur={(e) => e.target.style.borderColor = 'var(--sub-color)'}
+          />
 
-          <div className="input-group">
-            <label htmlFor="password" className="input-label">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="input-field"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              autoComplete="current-password"
-            />
-          </div>
+          <input
+            type="password"
+            placeholder="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '1rem',
+              padding: '0.875rem 1rem',
+              backgroundColor: 'transparent',
+              color: 'var(--text-color)',
+              border: '2px solid var(--sub-color)',
+              borderRadius: '0.5rem',
+              outline: 'none',
+              transition: 'all 0.25s ease',
+              width: '100%'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#0ea5e9'}
+            onBlur={(e) => e.target.style.borderColor = 'var(--sub-color)'}
+          />
 
           {error && (
-            <div className="error-message slide-up">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
+            <div style={{
+              color: 'var(--error-color)',
+              fontSize: '0.875rem',
+              fontFamily: 'var(--font-sans)',
+              textAlign: 'center',
+              padding: '0.75rem',
+              backgroundColor: 'var(--error-extra-color)',
+              borderRadius: '0.5rem'
+            }}>
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            className="login-button"
             disabled={loading}
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              padding: '0.875rem 1.5rem',
+              border: '2px solid var(--sub-color)',
+              borderRadius: '0.5rem',
+              backgroundColor: 'transparent',
+              color: 'var(--text-color)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.25s ease',
+              width: '100%',
+              textTransform: 'lowercase',
+              letterSpacing: '0.02em',
+              opacity: loading ? 0.6 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.target.style.borderColor = '#0ea5e9';
+                e.target.style.color = '#0ea5e9';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.target.style.borderColor = 'var(--sub-color)';
+                e.target.style.color = 'var(--text-color)';
+              }
+            }}
           >
-            {loading ? (
-              <>
-                <span className="loading"></span>
-                <span>Logging in...</span>
-              </>
-            ) : (
-              'Sign In'
-            )}
+            {loading ? "signing in..." : "sign in"}
           </button>
 
-          <div className="login-footer">
-            <span className="text-dim">
-              Don't have an account?{' '}
-            </span>
-            <Link to="/signup" className="text-accent">
-              Register
+          <div style={{ 
+            textAlign: 'center', 
+            fontSize: '0.875rem', 
+            color: 'var(--sub-color)', 
+            fontFamily: 'var(--font-sans)',
+            marginTop: '1rem'
+          }}>
+            <Link 
+              to="/signup" 
+              style={{ 
+                color: 'var(--sub-color)', 
+                textDecoration: 'none',
+                transition: 'color 0.25s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.color = '#0ea5e9'}
+              onMouseLeave={(e) => e.target.style.color = 'var(--sub-color)'}
+            >
+              need an account?
             </Link>
           </div>
-        </form>
 
-        <div className="guest-section">
-          <div className="divider">
-            <span className="divider-text">or</span>
-          </div>
-          
           <button
-            onClick={() => navigate('/dashboard')}
-            className="guest-button"
+            type="button"
+            onClick={() => navigate("/dashboard")}
             disabled={loading}
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              padding: '0.875rem 1.5rem',
+              border: '2px solid var(--sub-color)',
+              borderRadius: '0.5rem',
+              backgroundColor: 'transparent',
+              color: 'var(--sub-color)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.25s ease',
+              width: '100%',
+              textTransform: 'lowercase',
+              letterSpacing: '0.02em',
+              opacity: loading ? 0.6 : 1,
+              marginTop: '0.75rem'
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.target.style.borderColor = 'var(--text-color)';
+                e.target.style.color = 'var(--text-color)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.target.style.borderColor = 'var(--sub-color)';
+                e.target.style.color = 'var(--sub-color)';
+              }
+            }}
           >
-            Continue as Guest
+            continue as guest
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

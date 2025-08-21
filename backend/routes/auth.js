@@ -13,8 +13,17 @@ const generateToken = (id) => {
   });
 };
 
+// Helper function to set cookie options
+const getCookieOptions = () => {
+  return {
+    httpOnly: true, // Prevents XSS attacks
+    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    sameSite: "strict", // CSRF protection
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
+  };
+};
 
-router.post("/register", async (req, res) => {
+router.post("/register",  async (req, res) => {
   const { username, password } = req.body;
   
   try {
@@ -32,10 +41,15 @@ router.post("/register", async (req, res) => {
     });
     
     if (user) {
+      const token = generateToken(user._id);
+      
+      // Set cookie
+      res.cookie("token", token, getCookieOptions());
+      
       res.status(201).json({
         _id: user._id,
         username: user.username,
-        token: generateToken(user._id),
+        message: "User registered successfully"
       });
     } else {
       res.status(400).json({ message: "Invalid user data" });
@@ -45,7 +59,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   
@@ -54,16 +67,30 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ username });
     
     if (user && (await user.matchPassword(password))) {
+      const token = generateToken(user._id);
+      
+      // Set cookie
+      res.cookie("token", token, getCookieOptions());
+      
       res.json({
         _id: user._id,
         username: user.username,
-        token: generateToken(user._id),
+        message: "Login successful"
       });
     } else {
       res.status(401).json({ message: "Invalid credentials" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/logout", (req, res) => {
+  if(req.cookies.token) {
+    res.clearCookie("token", getCookieOptions());
+    res.json({ message: "Logout successful" });
+  } else {
+    res.status(400).json({ message: "No user is logged in" });
   }
 });
 

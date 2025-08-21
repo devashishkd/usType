@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.js";
 import roomRoutes from "./routes/room.js";
 import User from "./models/User.js";
 import Room from "./models/Room.js";
+import cookieParser from "cookie-parser";
 
 const playersMap = new Map()
 
@@ -34,7 +35,7 @@ app.use(
     credentials: true, // allow cookies / JWT headers
   })
 );
-
+app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 

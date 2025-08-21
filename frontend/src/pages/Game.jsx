@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import socket from "../socket";
 import LeaderboardPanel from "../components/LeaderboardPanel";
+import { AuthContext } from "../context/AuthContext";
 
 // Game constants
 const DEFAULT_TEXT = "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!";
@@ -44,10 +45,22 @@ const getErrorCount = (input, target) => {
 export default function Game() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-  const username = localStorage.getItem("username") || "Anonymous";
+  const location = useLocation();
+  const { user } = useContext(AuthContext);
+  
+  // Get username from context or fallback to Anonymous
+  const username = user?.username || "Anonymous";
+  
+  // Get game data from navigation state
+  const gameDataFromState = location.state?.gameData;
+  
+  // Use navigation state data
+  const initialGameData = gameDataFromState || {};
   
   // Game state
-  const [targetText, setTargetText] = useState("The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.");
+  const [targetText, setTargetText] = useState(
+    initialGameData.text || DEFAULT_TEXT
+  );
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
   const [gameState, setGameState] = useState('waiting'); // 'waiting', 'active', 'finished'
   const [input, setInput] = useState("");
@@ -67,16 +80,8 @@ export default function Game() {
   const gameStartTimeRef = useRef(null);
   const timerIntervalRef = useRef(null);
   
-  // Initialize game from stored data
+  // Initialize game
   useEffect(() => {
-    const gameData = localStorage.getItem("gameData");
-    if (gameData) {
-      const { text } = JSON.parse(gameData);
-      if (text) {
-        setTargetText(text);
-      }
-    }
-    
     // Join room for updates
     socket.emit("joinRoom", { roomId, username });
     
@@ -324,6 +329,12 @@ export default function Game() {
     navigate('/dashboard');
   };
   
+  // Leave room and navigate to dashboard
+  const leaveRoom = () => {
+    socket.emit("leaveRoom", { roomId, username });
+    navigate('/dashboard');
+  };
+  
   // Render text with highlighting
   const renderText = () => {
     return targetText.split('').map((char, index) => {
@@ -376,10 +387,7 @@ export default function Game() {
                   <>
                     <button
                       className="btn btn-ghost"
-                      onClick={() => {
-                        socket.emit("leaveRoom", { roomId, username });
-                        navigate('/dashboard');
-                      }}
+                      onClick={leaveRoom}
                     >
                       leave room
                     </button>
@@ -486,6 +494,14 @@ export default function Game() {
                   </div>
                 </div>
                 
+                <div className="card p-4 text-center">
+                  <div className="text-accent" style={{ fontSize: '3rem', fontWeight: '600' }}>
+                    {finalResults?.progress || gameStats.progress}%
+                  </div>
+                  <div className="text-dim" style={{ fontSize: '0.875rem' }}>
+                    completion
+                  </div>
+                </div>
               </div>
             
               
@@ -502,20 +518,10 @@ export default function Game() {
                 )}
                 <button
                   className="btn btn-ghost"
-                  onClick={() => {
-                    socket.emit("leaveRoom", { roomId, username });
-                    navigate('/dashboard');
-                  }}
+                  onClick={leaveRoom}
                   style={{ minWidth: '150px' }}
                 >
                   leave room
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  onClick={returnToDashboard}
-                  style={{ minWidth: '150px' }}
-                >
-                  return to dashboard
                 </button>
               </div>
               
@@ -525,14 +531,14 @@ export default function Game() {
                     waiting for host to restart the game
                   </p>
                 </div>
-              )}
+                )}
             </div>
           )}
         </div>
         
         {/* Right Side - Leaderboard */}
         <div style={{ width: '350px' }}>
-          <LeaderboardPanel players={players} currentUser={username} />
+          <LeaderboardPanel players={players} />
         </div>
       </div>
     </div>

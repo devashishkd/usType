@@ -1,4 +1,3 @@
-/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&family=Lexend+Deca:wght@300;400;500;600;700&display=swap');
 
 /* MonkeyType-inspired Theme Variables */
@@ -691,252 +690,200 @@ a:hover {
   outline: none;
 }
 
-/* Login Page Styles */
-.login-page {
-  min-height: 100vh;
+/* Navbar Styles - Monkeytype inspired */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--bg-color, #111112e9);
+  border-bottom: 2px solid var(--sub-color, #060606);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.navbar-container {
+  background: var(--bg-color, #3a3a3ae9);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 60px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-alt) 100%);
+  justify-content: space-between;
+  gap: 2rem;
 }
 
-.login-container {
-  width: 100%;
-  max-width: 420px;
-  background-color: var(--sub-alt-color);
-  border-radius: 1.5rem;
-  padding: 2.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--sub-color);
-  transition: all var(--transition-speed) var(--transition-smooth);
-}
-
-.login-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.logo svg {
-  color: var(--main-color);
-  transition: transform var(--transition-speed) var(--transition-smooth);
-}
-
-.logo:hover svg {
-  transform: scale(1.1);
-}
-
-.login-title {
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--text-color);
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.02em;
-}
-
-.login-subtitle {
-  font-size: 1rem;
-  color: var(--sub-color);
-  margin-bottom: 0;
-}
-
-.login-form {
-  margin-bottom: 1.5rem;
-}
-
-.input-group {
-  margin-bottom: 1.5rem;
-}
-
-.input-label {
+/* Brand/Logo */
+.navbar-brand {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--sub-color);
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.input-field {
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  padding: 0.875rem 1.25rem;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  border: 2px solid var(--sub-alt-color);
-  border-radius: 0.75rem;
-  outline: none;
-  transition: all var(--transition-speed) var(--transition-smooth);
-  width: 100%;
-}
-
-.input-field:focus {
-  border-color: var(--main-color);
-  background-color: var(--bg-alt);
-  box-shadow: 0 0 0 3px rgba(226, 183, 20, 0.2);
-}
-
-.input-field::placeholder {
-  color: var(--text-dim);
-  opacity: 0.7;
-}
-
-.input-field:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.login-button {
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 1rem 1.5rem;
-  border: none;
-  border-radius: 0.75rem;
-  background-color: var(--main-color);
-  color: var(--bg-color);
   cursor: pointer;
-  transition: all var(--transition-speed) var(--transition-smooth);
-  outline: none;
-  position: relative;
-  overflow: hidden;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  width: 100%;
+  color: var(--main-color, #e2b714);
+  font-weight: 600;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.navbar-brand:hover {
+  color: var(--caret-color, #e2b714);
+  transform: translateY(-1px);
+}
+
+.brand-icon {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+
+.brand-text {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-weight: 700;
+}
+
+/* Navigation Links */
+.navbar-links {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 15px rgba(226, 183, 20, 0.3);
+  gap: 0.5rem;
 }
 
-.login-button:hover:not(:disabled) {
-  background-color: var(--accent-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(226, 183, 20, 0.4);
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--sub-color, #646669);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.9rem;
+  font-weight: 400;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: lowercase;
+  user-select: none;
+  white-space: nowrap;
 }
 
-.login-button:active:not(:disabled) {
+.nav-btn:hover {
+  color: var(--text-color, #d1d0c5);
+  background: var(--sub-alt-color, #2c2e31);
+  transform: translateY(-1px);
+}
+
+.nav-btn:active {
   transform: translateY(0);
 }
 
-.login-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
+.nav-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  flex-shrink: 0;
 }
 
-.login-footer {
-  text-align: center;
-  font-size: 0.875rem;
-}
-
-.error-message {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  background-color: var(--error-extra-color);
-  border-radius: 0.75rem;
-  color: var(--error-color);
-  font-size: 0.875rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid var(--error-color);
-}
-
-.guest-section {
-  text-align: center;
-}
-
-.divider {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 2rem 0;
-}
-
-.divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background-color: var(--sub-alt-color);
-  z-index: 1;
-}
-
-.divider-text {
-  position: relative;
-  z-index: 2;
-  background-color: var(--sub-alt-color);
-  color: var(--sub-color);
-  font-size: 0.875rem;
-  padding: 0 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.guest-button {
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
+/* Primary button (register) */
+.nav-btn-primary {
+  background: var(--main-color, #e2b714);
+  color: var(--bg-color, #323437);
   font-weight: 500;
-  padding: 0.875rem 1.5rem;
-  border: 2px solid var(--sub-alt-color);
-  border-radius: 0.75rem;
-  background-color: transparent;
-  color: var(--sub-color);
-  cursor: pointer;
-  transition: all var(--transition-speed) var(--transition-smooth);
-  outline: none;
-  width: 100%;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.guest-button:hover:not(:disabled) {
-  background-color: var(--sub-alt-color);
-  color: var(--text-color);
-  border-color: var(--sub-color);
-  transform: translateY(-2px);
+.nav-btn-primary:hover {
+  background: var(--caret-color, #e2b714);
+  color: var(--bg-color, #323437);
+  box-shadow: 0 4px 12px rgba(226, 183, 20, 0.3);
 }
 
-.guest-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* Logout button */
+.nav-btn-logout {
+  color: var(--error-color, #ca4754);
+}
+
+.nav-btn-logout:hover {
+  color: var(--error-color, #ca4754);
+  background: rgba(202, 71, 84, 0.1);
+}
+
+/* Divider */
+.nav-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--sub-color, #646669);
+  opacity: 0.3;
+  margin: 0 0.5rem;
 }
 
 /* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 1rem;
+    gap: 1rem;
+  }
+  
+  .navbar-links {
+    gap: 0.25rem;
+  }
+  
+  .nav-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  
+  .nav-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .brand-text {
+    font-size: 1.1rem;
+  }
+}
+
 @media (max-width: 480px) {
-  .login-container {
-    padding: 1.5rem;
+  .navbar-container {
+    padding: 0 0.75rem;
   }
   
-  .login-title {
-    font-size: 1.75rem;
+  /* Hide text on very small screens, keep only icons */
+  .nav-btn span:not(.brand-text) {
+    display: none;
   }
   
-  .input-field {
-    padding: 0.75rem 1rem;
+  .nav-btn {
+    padding: 0.4rem;
+    min-width: 36px;
+    justify-content: center;
   }
   
-  .login-button {
-    padding: 0.875rem 1.25rem;
+  .navbar-links {
+    gap: 0.1rem;
   }
+}
+
+/* Ensure main content doesn't hide behind fixed navbar */
+.container {
+  padding-top: 80px; /* Account for navbar height + some spacing */
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus states for accessibility */
+.nav-btn:focus-visible {
+  outline: 2px solid var(--main-color, #e2b714);
+  outline-offset: 2px;
+}
+
+.navbar-brand:focus-visible {
+  outline: 2px solid var(--main-color, #e2b714);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
 }

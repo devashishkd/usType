@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AuthContext } from "../context/AuthContext"; // Adjust path as needed
 
-export default function LeaderboardPanel({ players, currentUser }) {
+export default function LeaderboardPanel({ players }) {
+  const { user } = useContext(AuthContext);
+  const currentUser = user?.username;
+  
   console.log("🏆 LeaderboardPanel received players:", players);
   
   // Sort players by progress (descending), then by username

@@ -1,15 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import socket from "../socket";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Room() {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useContext(AuthContext);
+  
   const [players, setPlayers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
   const [isHost, setIsHost] = useState(false);
-  const username = localStorage.getItem("username") || "Anonymous";
+  
+  // Get username from context or fallback to Anonymous
+  const username = user?.username || "Anonymous";
   const messagesEndRef = useRef(null);
   
   // Auto-scroll to bottom of messages
@@ -36,16 +42,19 @@ export default function Room() {
       setMessages(prev => [...prev, message]);
     });
     
-    // Listen for game start - redirect to game page
+    // Listen for game start - pass data via navigate state
     socket.on("game:start", ({ text, duration }) => {
-      // Store game data in localStorage for the Game page
-      localStorage.setItem("gameData", JSON.stringify({
-        roomId,
-        text,
-        duration,
-        startTime: Date.now()
-      }));
-      navigate(`/game/${roomId}`);
+      // Pass game data through navigation state
+      navigate(`/game/${roomId}`, {
+        state: {
+          gameData: {
+            roomId,
+            text,
+            duration,
+            startTime: Date.now()
+          }
+        }
+      });
     });
     
     // Listen for room deletion - redirect to dashboard
@@ -87,6 +96,18 @@ export default function Room() {
     navigate('/dashboard');
   };
   
+  // Copy room ID to clipboard with feedback
+  const copyRoomId = async () => {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      // You could use a toast notification library here instead
+      // For now, just a simple alert - replace with proper toast in production
+      alert("Room ID copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy room ID:", err);
+    }
+  };
+  
   return (
     <div className="fade-in">
       <div style={{ minHeight: 'calc(100vh - 100px)' }}>
@@ -101,10 +122,7 @@ export default function Room() {
                 room id: <span className="text-bright">{roomId}</span>
               </p>
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(roomId);
-                  // Optional: show a "copied" feedback
-                }}
+                onClick={copyRoomId}
                 className="btn btn-primary ml-2"
                 style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
               >

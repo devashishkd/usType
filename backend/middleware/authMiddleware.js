@@ -1,32 +1,37 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-import dotenv from "dotenv";
-dotenv.config();
 
-const protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
   let token;
-  
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+
+  // Check if token exists in cookies
+  if (req.cookies && req.cookies.token) {
     try {
-      // Get token from header
-      token = req.headers.authorization.split(" ")[1];
-      
+      token = req.cookies.token;
+
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
-      // Get user from token
+
+      // Get user from the token
       req.user = await User.findById(decoded.id).select("-password");
-      
+
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authorized, user not found" });
+      }
+
       next();
     } catch (error) {
-      console.error(error);
-      res.status(401).json({ message: "Not authorized, token failed" });
+      console.error("Token verification failed:", error.message);
+      
+      // Clear invalid cookie
+      res.cookie("token", "", {
+        httpOnly: true,
+        expires: new Date(0),
+      });
+      
+      return res.status(401).json({ message: "Not authorized, token failed" });
     }
-  }
-  
-  if (!token) {
-    res.status(401).json({ message: "Not authorized, no token" });
+  } else {
+    return res.status(401).json({ message: "Not authorized, no token" });
   }
 };
-
-export { protect };
