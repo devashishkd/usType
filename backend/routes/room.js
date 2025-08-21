@@ -42,24 +42,25 @@ router.post("/", async (req, res) => {
     await room.save();
     res.status(201).json(room);
   } catch (error) {
+    
     res.status(500).json({ message: error.message });
   }
 });
 
 
-// router.get("/",protect, async (req, res) => {
-//   try {
-//     const rooms = await Room.find({}).populate("participants", "username");
-//     res.json(rooms);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
+router.get("/", async (req, res) => {
+  try {
+    const rooms = await Room.find({}).populate("participants", "username");
+    res.json(rooms);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // @desc    Get room by ID
 // @route   GET /api/room/:id
 // @access  Public
-router.get("/:id",protect, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.id }).populate("participants", "username");
     
@@ -74,7 +75,7 @@ router.get("/:id",protect, async (req, res) => {
 });
 
 
-router.put("/:id/join", protect, async (req, res) => {
+router.put("/:id/join", async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.id });
     
@@ -97,7 +98,7 @@ router.put("/:id/join", protect, async (req, res) => {
 });
 
 
-router.put("/:id/leave", protect, async (req, res) => {
+router.put("/:id/leave", async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.id });
     
