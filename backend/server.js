@@ -18,104 +18,128 @@ connectDB();
 
 const app = express();
 
-
+// FIXED: More robust CORS configuration for deployment
 const allowedOrigins = [
-  "https://itypex.onrender.com/",process.env.CLIENT_URL,    // deployed frontend (set in Render env vars later)
+  "https://itypex.onrender.com",
+  "http://localhost:3000",
+  "http://localhost:5173",
+  process.env.CLIENT_URL
 ].filter(Boolean);
 
-// Apply CORS
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like Postman) or from allowedOrigins
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+console.log("🌐 Allowed origins:", allowedOrigins);
 
-// Explicitly handle preflight requests
+// FIXED: Single comprehensive CORS configuration
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn("❌ CORS blocked origin:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+  exposedHeaders: ["set-cookie"]
+}));
+
+// FIXED: Explicit OPTIONS handling for preflight
 app.options("*", cors());
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // allow request
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true, // allow cookies / JWT headers
-  })
-);
+// Body parsing middleware
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Enhanced middleware for request logging
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.get('origin')}`);
   next();
+});
+
+// FIXED: Add health check at root for Render
+app.get("/", (req, res) => {
+  res.json({ 
+    status: "OK", 
+    message: "TypeX Server is running",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomRoutes);
-app.get("/api/health", (_req, res) => res.json({ 
-  ok: true, 
-  timestamp: new Date().toISOString(),
-  uptime: process.uptime()
-}));
+
+// Enhanced health check
+app.get("/api/health", (req, res) => {
+  res.json({ 
+    ok: true, 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    env: process.env.NODE_ENV,
+    cors: allowedOrigins
+  });
+});
 
 const server = http.createServer(app);
+
+// FIXED: More robust Socket.IO CORS configuration
 const io = new Server(server, {
   cors: { 
-    origin: process.env.CLIENT_URL || "*", 
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true
   },
   pingTimeout: 60000,
   pingInterval: 25000,
   upgradeTimeout: 30000,
+  transports: ['polling', 'websocket'], // FIXED: Ensure both transports work
   allowRequest: (req, callback) => {
-    // Enhanced connection validation
+    const origin = req.headers.origin;
+    console.log("🔌 Socket connection attempt from:", origin);
     callback(null, true);
   }
 });
 
-// Redis setup for scalable session management
+// FIXED: Improved Redis connection with better error handling
 let redisClient = null;
-const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
-try {
-  redisClient = new Redis(REDIS_URL, {
-    retryDelayOnFailover: 100,
-    maxRetriesPerRequest: 3,
-    lazyConnect: true,
-    reconnectOnError: (err) => {
-      const targetError = 'READONLY';
-      return err.message.includes(targetError);
-    }
-  });
+if (process.env.NODE_ENV === 'production' && process.env.REDIS_URL) {
+  try {
+    redisClient = new Redis(REDIS_URL, {
+      retryDelayOnFailover: 100,
+      maxRetriesPerRequest: 3,
+      lazyConnect: true,
+      connectTimeout: 10000,
+      commandTimeout: 5000,
+      reconnectOnError: (err) => {
+        const targetError = 'READONLY';
+        return err.message.includes(targetError);
+      }
+    });
 
-  redisClient.on('connect', () => {
-    console.log('âœ… Redis connected successfully');
-  });
+    redisClient.on('connect', () => {
+      console.log('✅ Redis connected successfully');
+    });
 
-  redisClient.on('error', (err) => {
-    console.warn('Redis connection error:', err.message);
-    console.log('Falling back to in-memory storage');
+    redisClient.on('error', (err) => {
+      console.warn('Redis connection error:', err.message);
+      console.log('Falling back to in-memory storage');
+      redisClient = null;
+    });
+  } catch (error) {
+    console.warn('Redis setup failed:', error.message);
+    console.log('Using in-memory storage');
     redisClient = null;
-  });
-} catch (error) {
-  console.warn('Redis setup failed:', error.message);
-  console.log('Using in-memory storage');
-  redisClient = null;
+  }
+} else {
+  console.log('📝 Using in-memory storage (development mode)');
 }
 
 // Fixed Game state management class
@@ -308,11 +332,11 @@ const resetRoomWPM = async (roomId) => {
 const setGameTimer = (roomId, duration) => {
   gameState.clearTimer(roomId);
   
-  console.log(`â° Setting timer for room ${roomId}: ${duration}s`);
+  console.log(`⏰ Setting timer for room ${roomId}: ${duration}s`);
   
   const timerId = setTimeout(async () => {
     try {
-      console.log(`â° Timer ended for room ${roomId}`);
+      console.log(`⏰ Timer ended for room ${roomId}`);
       io.to(roomId).emit("game:stopTyping", { roomId, timestamp: Date.now() });
       gameState.clearTimer(roomId);
     } catch (error) {
@@ -325,7 +349,7 @@ const setGameTimer = (roomId, duration) => {
 
 // Enhanced Socket.IO connection handling
 io.on("connection", (socket) => {
-  console.log(`ðŸ"Œ Client connected: ${socket.id}`);
+  console.log(`🔌 Client connected: ${socket.id}`);
   
   let currentRoom = null;
   let username = null;
@@ -333,7 +357,7 @@ io.on("connection", (socket) => {
   // Enhanced room joining with better error handling
   socket.on("joinRoom", async ({ roomId, username: name }) => {
     try {
-      console.log("ðŸšª Join room event received");
+      console.log("🚪 Join room event received");
       console.log("Room ID:", roomId);
       console.log("Username:", name);
       console.log("Socket ID:", socket.id);
@@ -341,7 +365,7 @@ io.on("connection", (socket) => {
       currentRoom = String(roomId);
       username = name || `Guest_${socket.id.substring(0, 6)}`;
       
-      console.log(`ðŸ'¤ ${username} joining room ${currentRoom}`);
+      console.log(`👤 ${username} joining room ${currentRoom}`);
       
       socket.join(currentRoom);
       
@@ -355,7 +379,7 @@ io.on("connection", (socket) => {
       
       // Set host if this is the first player
       if (playersMap.size === 0) {
-        console.log(`ðŸ'' Setting ${username} as host of room ${currentRoom}`);
+        console.log(`👑 Setting ${username} as host of room ${currentRoom}`);
         await gameState.setRoomHost(currentRoom, socket.id);
       }
       
@@ -368,7 +392,7 @@ io.on("connection", (socket) => {
       console.log("Sorted players:", sortedPlayers);
       io.to(currentRoom).emit("players:update", sortedPlayers);
       
-      console.log(`âœ… ${username} joined room ${currentRoom} (${sortedPlayers.length} players)`);
+      console.log(`✅ ${username} joined room ${currentRoom} (${sortedPlayers.length} players)`);
       
     } catch (error) {
       console.error('Join room error:', error);
@@ -515,7 +539,7 @@ io.on("connection", (socket) => {
       console.log("📊 WPM update received:");
       console.log("Room ID:", roomId);
       console.log("Username:", name);
-      console.log("WPM:", wpm);
+      console.log("WPM:", wmp);
       console.log("Accuracy:", accuracy);
       console.log("Progress:", progress);
       console.log("Is final:", isFinal);
@@ -720,6 +744,15 @@ io.on("error", (error) => {
   console.error('Socket.IO error:', error);
 });
 
+// FIXED: Better error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Express error:', err);
+  res.status(500).json({ 
+    error: 'Internal server error', 
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
+
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('🔴 SIGTERM received, shutting down gracefully...');
@@ -741,35 +774,16 @@ process.on('SIGTERM', async () => {
   });
 });
 
+// FIXED: Simplified server startup
 const PORT = process.env.PORT || 5000;
 
-const startServer = (port) => {
-  // Ensure port is a number and within valid range
-  const numPort = parseInt(port);
-  if (isNaN(numPort) || numPort < 0 || numPort >= 65536) {
-    console.error(`❌ Invalid port number: ${port}`);
-    process.exit(1);
-  }
-  
-  server.listen(numPort, () => {
-    console.log(`🚀 Server running on port ${numPort}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`💾 Storage: ${redisClient ? 'Redis + Memory' : 'Memory only'}`);
-  })
-  .on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      const nextPort = numPort + 1;
-      if (nextPort >= 65536) {
-        console.error(`❌ No available ports found`);
-        process.exit(1);
-      }
-      console.log(`⚠️ Port ${numPort} is busy, trying ${nextPort}...`);
-      startServer(nextPort);
-    } else {
-      console.error('❌ Server error:', err);
-      process.exit(1);
-    }
-  });
-};
-
-startServer(process.env.PORT);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`💾 Storage: ${redisClient ? 'Redis + Memory' : 'Memory only'}`);
+  console.log(`🌐 CORS enabled for:`, allowedOrigins);
+})
+.on('error', (err) => {
+  console.error('❌ Server error:', err);
+  process.exit(1);
+});
