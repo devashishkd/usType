@@ -4,7 +4,7 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   const { text } = req.body;
 
   console.log('Hello');
@@ -48,7 +48,7 @@ router.post("/", async (req, res) => {
 });
 
 
-router.get("/", async (req, res) => {
+router.get("/", protect, async (req, res) => {
   try {
     const rooms = await Room.find({}).populate("participants", "username");
     res.json(rooms);
@@ -60,7 +60,7 @@ router.get("/", async (req, res) => {
 // @desc    Get room by ID
 // @route   GET /api/room/:id
 // @access  Public
-router.get("/:id", async (req, res) => {
+router.get("/:id", protect, async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.id }).populate("participants", "username");
     
@@ -75,8 +75,9 @@ router.get("/:id", async (req, res) => {
 });
 
 
-router.put("/:id/join", async (req, res) => {
+router.put("/:id/join", protect, async (req, res) => {
   try {
+    console.log("Joining room with ID:", req.params.id);
     const room = await Room.findOne({ roomId: req.params.id });
     
     if (room) {
@@ -98,7 +99,7 @@ router.put("/:id/join", async (req, res) => {
 });
 
 
-router.put("/:id/leave", async (req, res) => {
+router.put("/:id/leave", protect, async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.id });
     

@@ -540,7 +540,7 @@ io.on("connection", (socket) => {
       console.log("📊 WPM update received:");
       console.log("Room ID:", roomId);
       console.log("Username:", name);
-      console.log("WPM:", wmp);
+      console.log("WPM:", wpm);
       console.log("Accuracy:", accuracy);
       console.log("Progress:", progress);
       console.log("Is final:", isFinal);
