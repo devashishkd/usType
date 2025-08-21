@@ -36,7 +36,7 @@ export default function Login() {
       });
       
       setUser(data);
-      console.log("here is the user: ", user);
+      console.log("here is the user: ", data);
 
       navigate("/dashboard");
     
