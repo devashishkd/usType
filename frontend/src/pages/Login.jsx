@@ -10,7 +10,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {user, setUser} = useContext(AuthContext);
-  // Configure axios to include credentials (cookies) with requestsd
+  // Configure axios to include credentials (cookies) with requestds
   axios.defaults.withCredentials = true;
 
   const onSubmit = async (e) => {
@@ -98,6 +98,7 @@ export default function Login() {
             onFocus={(e) => e.target.style.borderColor = '#0ea5e9'}
             onBlur={(e) => e.target.style.borderColor = 'var(--sub-color)'}
           />
+          
 
           <input
             type="password"

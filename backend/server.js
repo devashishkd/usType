@@ -18,10 +18,29 @@ connectDB();
 
 const app = express();
 
+
 const allowedOrigins = [
-  "http://localhost:5173",      // your dev frontend
-  process.env.CLIENT_URL,       // your deployed frontend (when you add it in Render)
-].filter(Boolean); // removes undefined entries
+  "https://itypex.onrender.com/",   // local dev frontend
+  process.env.CLIENT_URL,    // deployed frontend (set in Render env vars later)
+].filter(Boolean);
+
+// Apply CORS
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like Postman) or from allowedOrigins
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+// Explicitly handle preflight requests
+app.options("*", cors());
 
 app.use(
   cors({
