@@ -35,6 +35,7 @@ export default function Login() {
         password,
       });
       
+      console.log(data);
       setUser(data);
       console.log("here is the user: ", data);
 
