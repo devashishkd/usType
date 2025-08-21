@@ -15,7 +15,7 @@ const calculateWPM = (correctChars, timeInSeconds) => {
   const minutes = timeInSeconds / 60;
   return Math.round((correctChars / WORDS_PER_MINUTE_DIVISOR) / minutes);
 };
-
+//Accuracy and progress calculations
 const calculateAccuracy = (correctChars, totalTyped) => {
   if (totalTyped <= 0) return 100;
   return Math.round((correctChars / totalTyped) * 100);
