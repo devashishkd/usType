@@ -13,7 +13,7 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, checkAuth, isLoading } = useContext(AuthContext);
 
   const load = async () => {
     try {
@@ -32,12 +32,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Don't load if still checking authentication
-    if (user) {
+    if (isLoading) {
       load();
     }
-  }, [user]);
-
-
+  }, [checkAuth]);
 
   const createRoom = async () => {
     if (!user) {
