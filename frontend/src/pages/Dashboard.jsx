@@ -53,9 +53,11 @@ export default function Dashboard() {
 
     setLoading(true);
     try {
-      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
+      
+      const baseURL = import.meta.env.VITE_API_URL;
+      console.log("room api :", baseURL)
       const { data } = await axios.post(`${baseURL}/rooms`, {
-        text: "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.",
+        text: "the quick brown fox jumps over the lazy dog. pack my box with five dozen liquor jugs.",
       });
       
       setRooms([data, ...rooms]);
@@ -274,7 +276,7 @@ export default function Dashboard() {
         </div>
       </div>
       {/* Rooms List Section */}
-      {console.log(import.meta.env.NODE_ENV, import.meta.env.HELLO)}
+      {console.log('urel:',import.meta.env.VITE_API_URL)}
       {(import.meta.env.HELLO === 'development') && (
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
           <div className="flex justify-between items-center mb-4">

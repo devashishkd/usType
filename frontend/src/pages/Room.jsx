@@ -86,7 +86,7 @@ export default function Room() {
   
   // Start game handler
   const startGame = () => {
-    const targetText = "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!";
+    const targetText = "the quick brown fox jump over the lazy dog pack my box with five dozen liquor jugs how vexingly quick daft zebras jump";
     socket.emit("startGame", { roomId, text: targetText, duration: 30 });
   };
   

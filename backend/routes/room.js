@@ -4,11 +4,10 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// @desc    Create a new room
-// @route   POST /api/room
-// @access  Private
 router.post("/", protect, async (req, res) => {
   const { text } = req.body;
+
+  console.log('Hello');
   
   try {
     // Generate a unique 6-digit roomId
@@ -76,9 +75,7 @@ router.get("/:id",protect, async (req, res) => {
   }
 });
 
-// @desc    Join a room
-// @route   PUT /api/room/:id/join
-// @access  Private
+
 router.put("/:id/join", protect, async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.id });
@@ -101,9 +98,7 @@ router.put("/:id/join", protect, async (req, res) => {
   }
 });
 
-// @desc    Leave a room
-// @route   PUT /api/room/:id/leave
-// @access  Private
+
 router.put("/:id/leave", protect, async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.id });
