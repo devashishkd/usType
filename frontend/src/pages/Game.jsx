@@ -5,7 +5,7 @@ import LeaderboardPanel from "../components/LeaderboardPanel";
 import { AuthContext } from "../context/AuthContext";
 
 // Game constants
-const DEFAULT_TEXT = "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!";
+const DEFAULT_TEXT = "the quick brown fox jumps over the lazy dog. this pangram contains every letter of the alphabet at least once. pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!";
 const GAME_DURATION = 30;
 const WORDS_PER_MINUTE_DIVISOR = 5;
 //
