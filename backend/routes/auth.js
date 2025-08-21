@@ -65,7 +65,6 @@ router.post("/login", async (req, res) => {
   try {
     // Check for user
     const user = await User.findOne({ username });
-    console.log(User);
     
     if (user && (await user.matchPassword(password))) {
       const token = generateToken(user._id);
@@ -98,7 +97,7 @@ router.post("/logout", (req, res) => {
 
 router.get("/me", protect, async (req, res) => {
   try {
-    console.log(req.user._id);
+    console.log("User ID from token:", req.user._id);
     const user = await User.findById(req.user._id);
     
     if (user) {
