@@ -24,10 +24,17 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  host: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+}, {
+  timestamps: true,
 });
 
 export default mongoose.model("Room", roomSchema);

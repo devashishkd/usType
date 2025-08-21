@@ -95,8 +95,9 @@ export default function Game() {
   useEffect(() => {
     const playersUpdateHandler = (updatedPlayers) => {
       setPlayers(updatedPlayers || []);
-      // Determine if current user is host (first player)
-      const isUserHost = (updatedPlayers && updatedPlayers.length > 0 && updatedPlayers[0].username === username) || false;
+      // Find the current user in the players list and check if they are the host
+      const currentPlayer = updatedPlayers ? updatedPlayers.find(player => player.username === username) : null;
+      const isUserHost = currentPlayer ? currentPlayer.isHost : false;
       setIsHost(isUserHost);
     };
     

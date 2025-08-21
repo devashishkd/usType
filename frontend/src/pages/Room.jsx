@@ -31,10 +31,12 @@ export default function Room() {
   useEffect(() => {
     socket.emit("joinRoom", { roomId, username });
     
-    // Check if user is host (first player)
+    // Check if user is host based on player data
     socket.on("players:update", (updatedPlayers) => {
       setPlayers(updatedPlayers);
-      setIsHost(updatedPlayers.length > 0 && updatedPlayers[0].username === username);
+      // Find the current user in the players list and check if they are the host
+      const currentPlayer = updatedPlayers.find(player => player.username === username);
+      setIsHost(currentPlayer ? currentPlayer.isHost : false);
     });
     
     // Listen for messages

@@ -285,6 +285,14 @@ const getSortedPlayers = async (roomId) => {
     const playersMap = await gameState.getRoomPlayers(roomId);
     if (!playersMap || playersMap.size === 0) return [];
     
+    // Get room information from database to determine host
+    let roomFromDB = null;
+    try {
+      roomFromDB = await Room.findOne({ roomId }).populate('host', 'username');
+    } catch (dbError) {
+      console.error('Database error when getting room info:', dbError);
+    }
+    
     const players = Array.from(playersMap.values())
       .filter(p => p && p.username)
       .map(p => ({
@@ -293,7 +301,8 @@ const getSortedPlayers = async (roomId) => {
         accuracy: Math.min(100, Math.max(0, p.accuracy || 100)),
         progress: Math.min(100, Math.max(0, p.progress || 0)),
         isTyping: p.isTyping || false,
-        lastUpdate: p.lastUpdate || Date.now()
+        lastUpdate: p.lastUpdate || Date.now(),
+        isHost: roomFromDB && roomFromDB.host && roomFromDB.host.username === p.username
       }))
       .sort((a, b) => {
         // Sort by progress desc, then by username
@@ -378,10 +387,26 @@ io.on("connection", (socket) => {
         playersMap = new Map();
       }
       
-      // Set host if this is the first player
+      // Check if room exists in database and get host information
+      let roomFromDB = null;
+      try {
+        roomFromDB = await Room.findOne({ roomId: currentRoom });
+      } catch (dbError) {
+        console.error('Database error when checking room:', dbError);
+      }
+      
+      // Set host logic: only set host if this is the first player AND room doesn't exist in DB
       if (playersMap.size === 0) {
-        console.log(`👑 Setting ${username} as host of room ${currentRoom}`);
-        await gameState.setRoomHost(currentRoom, socket.id);
+        if (!roomFromDB) {
+          // Room doesn't exist in DB, this is a new room - set current user as host
+          console.log(`👑 Setting ${username} as host of new room ${currentRoom}`);
+          await gameState.setRoomHost(currentRoom, socket.id);
+        } else {
+          // Room exists in DB, use the host from database
+          console.log(`👑 Room ${currentRoom} exists in DB, host is: ${roomFromDB.host}`);
+          // Note: We don't set the host here since it should be managed by the database
+          // The host will be determined by checking if the current user is the room creator
+        }
       }
       
       // Add player with enhanced data
@@ -434,11 +459,30 @@ io.on("connection", (socket) => {
       
       console.log(`🎮 Starting game in room ${r} (${duration}s)`);
       
+      // Check if user is the host by checking the database
+      let isHost = false;
+      try {
+        const roomFromDB = await Room.findOne({ roomId: r }).populate('host', 'username');
+        if (roomFromDB && roomFromDB.host) {
+          // Check if the current user is the host
+          const currentPlayer = await gameState.getRoomPlayers(r);
+          if (currentPlayer && currentPlayer.has(socket.id)) {
+            const playerData = currentPlayer.get(socket.id);
+            isHost = roomFromDB.host.username === playerData.username;
+          }
+        }
+      } catch (dbError) {
+        console.error('Database error when checking host:', dbError);
+      }
+      
+      if (!isHost) {
+        console.log("❌ User is not host, cannot start game");
+        socket.emit("error", { message: "Only the host can start the game" });
+        return;
+      }
+      
       // Validate duration
       const validDuration = Math.max(10, Math.min(300, parseInt(duration)));
-      
-      // Set host
-      await gameState.setRoomHost(r, socket.id);
       
       // Reset all players
       await resetRoomWPM(r);
@@ -485,18 +529,24 @@ io.on("connection", (socket) => {
         return;
       }
       
-      // Get host ID
-      const hostId = await gameState.getRoomHost(r);
-      console.log("Host ID from state:", hostId);
-      console.log("Current socket ID:", socket.id);
+      // Check if user is the host by checking the database
+      let isHost = false;
+      try {
+        const roomFromDB = await Room.findOne({ roomId: r }).populate('host', 'username');
+        if (roomFromDB && roomFromDB.host) {
+          // Check if the current user is the host
+          const currentPlayer = await gameState.getRoomPlayers(r);
+          if (currentPlayer && currentPlayer.has(socket.id)) {
+            const playerData = currentPlayer.get(socket.id);
+            isHost = roomFromDB.host.username === playerData.username;
+          }
+        }
+      } catch (dbError) {
+        console.error('Database error when checking host:', dbError);
+      }
       
-      // If no host is set, set the current user as host
-      if (!hostId) {
-        console.log("⚠️ No host found, setting current user as host");
-        await gameState.setRoomHost(r, socket.id);
-      } else if (hostId !== socket.id) {
+      if (!isHost) {
         console.log("❌ User is not host, cannot restart game");
-        console.log(`Host: ${hostId}, Current: ${socket.id}`);
         socket.emit("error", { message: "Only the host can restart the game" });
         return;
       }
@@ -639,9 +689,17 @@ io.on("connection", (socket) => {
       
       const playersMap = await gameState.getRoomPlayers(r);
       if (playersMap && playersMap.has(socket.id)) {
-        // Check if leaving player was host
-        const hostId = await gameState.getRoomHost(r);
-        const isHost = hostId === socket.id;
+        // Check if leaving player was host by checking the database
+        let isHost = false;
+        try {
+          const roomFromDB = await Room.findOne({ roomId: r }).populate('host', 'username');
+          if (roomFromDB && roomFromDB.host) {
+            const playerData = playersMap.get(socket.id);
+            isHost = roomFromDB.host.username === playerData.username;
+          }
+        } catch (dbError) {
+          console.error('Database error when checking host:', dbError);
+        }
         
         // If host is leaving, delete the room and redirect all players
         if (isHost) {
@@ -691,9 +749,17 @@ io.on("connection", (socket) => {
       if (currentRoom) {
         const playersMap = await gameState.getRoomPlayers(currentRoom);
         if (playersMap && playersMap.has(socket.id)) {
-          // Check if disconnected player was host
-          const hostId = await gameState.getRoomHost(currentRoom);
-          const isHost = hostId === socket.id;
+          // Check if disconnected player was host by checking the database
+          let isHost = false;
+          try {
+            const roomFromDB = await Room.findOne({ roomId: currentRoom }).populate('host', 'username');
+            if (roomFromDB && roomFromDB.host) {
+              const playerData = playersMap.get(socket.id);
+              isHost = roomFromDB.host.username === playerData.username;
+            }
+          } catch (dbError) {
+            console.error('Database error when checking host:', dbError);
+          }
           
           // If host disconnects, delete the room and redirect all players
           if (isHost) {
