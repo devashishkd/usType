@@ -21,6 +21,7 @@ const app = express();
 // FIXED: More robust CORS configuration for deployment
 const allowedOrigins = [
   "https://itypex.onrender.com",
+  "https://wetype-ayft.onrender.com",
   "http://localhost:3000",
   "http://localhost:5173",
   process.env.CLIENT_URL
