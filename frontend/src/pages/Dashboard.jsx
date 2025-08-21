@@ -128,7 +128,7 @@ export default function Dashboard() {
   };
 
   // Show loading while checking authentication
-  if (authLoading) {
+  if (isLoading) {
     return (
       <div className="fade-in text-center" style={{ paddingTop: "4rem" }}>
         <div className="text-dim">Loading...</div>
