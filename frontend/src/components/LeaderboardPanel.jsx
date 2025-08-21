@@ -7,7 +7,7 @@ export default function LeaderboardPanel({ players }) {
   
   console.log("🏆 LeaderboardPanel received players:", players);
   
-  // Sort players by progress (descending), then by username
+  // Sort players by progress , then by username
   const sortedPlayers = [...players].sort((a, b) => {
     if (b.progress !== a.progress) {
       return (b.progress || 0) - (a.progress || 0);
