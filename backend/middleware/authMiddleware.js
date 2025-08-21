@@ -3,7 +3,7 @@ import User from "../models/User.js";
 
 export const protect = async (req, res, next) => {
   let token;
-
+  console.log("Auth Middleware: Checking for token...");
   // Check if token exists in cookies
   if (req.cookies && req.cookies.token) {
     try {
