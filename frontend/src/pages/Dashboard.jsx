@@ -53,6 +53,7 @@ export default function Dashboard() {
         text: "the quick brown fox jumps over the lazy dog. pack my box with five dozen liquor jugs.",
       });
       
+      console.log("New room created:", data);
       setRooms([data, ...rooms]);
       // Navigate to room with game data in state
       navigate(`/room/${data.roomId}`, {
