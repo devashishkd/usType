@@ -20,8 +20,7 @@ const app = express();
 
 
 const allowedOrigins = [
-  "https://itypex.onrender.com/",   // local dev frontend
-  process.env.CLIENT_URL,    // deployed frontend (set in Render env vars later)
+  "https://itypex.onrender.com/",process.env.CLIENT_URL,    // deployed frontend (set in Render env vars later)
 ].filter(Boolean);
 
 // Apply CORS
