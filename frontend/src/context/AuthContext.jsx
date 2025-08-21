@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     try {
       const baseURL = import.meta.env.VITE_API_URL;
-      const response = await axios.get(`${baseURL}/auth/login`);
+      const response = await axios.get(`${baseURL}/auth/me`);
       setUser(response.data);
     } catch (error) {
       setUser(null);
