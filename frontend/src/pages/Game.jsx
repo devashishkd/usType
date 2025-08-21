@@ -8,7 +8,7 @@ import { AuthContext } from "../context/AuthContext";
 const DEFAULT_TEXT = "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!";
 const GAME_DURATION = 30;
 const WORDS_PER_MINUTE_DIVISOR = 5;
-
+//
 // Utility functions
 const calculateWPM = (correctChars, timeInSeconds) => {
   if (timeInSeconds <= 0) return 0;

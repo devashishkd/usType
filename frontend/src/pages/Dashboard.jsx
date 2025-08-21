@@ -273,7 +273,6 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
-
       {/* Rooms List Section */}
       {console.log(import.meta.env.NODE_ENV, import.meta.env.HELLO)}
       {(import.meta.env.HELLO === 'development') && (

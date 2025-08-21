@@ -10,7 +10,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {user, setUser} = useContext(AuthContext);
-  // Configure axios to include credentials (cookies) with requests
+  // Configure axios to include credentials (cookies) with requestsd
   axios.defaults.withCredentials = true;
 
   const onSubmit = async (e) => {
