@@ -98,6 +98,7 @@ router.post("/logout", (req, res) => {
 
 router.get("/me", protect, async (req, res) => {
   try {
+    console.log(req.user._id);
     const user = await User.findById(req.user._id);
     
     if (user) {
