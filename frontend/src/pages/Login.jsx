@@ -25,7 +25,7 @@ export default function Login() {
     setLoading(true);
     try {
       console.log("Logging in with:", { username, password });
-      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
+      const baseURL = import.meta.env.VITE_API_URL;
       const { data } = await axios.post(`${baseURL}/auth/login`, { username, password });
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
