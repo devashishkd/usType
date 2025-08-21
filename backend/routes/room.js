@@ -46,17 +46,15 @@ router.post("/", async (req, res) => {
   }
 });
 
-// @desc    Get all rooms
-// @route   GET /api/room
-// @access  Public
-router.get("/",protect, async (req, res) => {
-  try {
-    const rooms = await Room.find({}).populate("participants", "username");
-    res.json(rooms);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+
+// router.get("/",protect, async (req, res) => {
+//   try {
+//     const rooms = await Room.find({}).populate("participants", "username");
+//     res.json(rooms);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
 
 // @desc    Get room by ID
 // @route   GET /api/room/:id
