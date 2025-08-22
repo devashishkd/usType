@@ -3,6 +3,27 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import socket from "../socket";
 import LeaderboardPanel from "../components/LeaderboardPanel";
 import { AuthContext } from "../context/AuthContext";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 // Game constants
 const DEFAULT_TEXT = "the quick brown fox jumps over the lazy dog. this pangram contains every letter of the alphabet at least once. pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!";
@@ -42,6 +63,126 @@ const getErrorCount = (input, target) => {
   return errors;
 };
 
+// Chart component
+const PerformanceChart = ({ chartData }) => {
+  if (!chartData || chartData.length === 0) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-dim">No performance data available</p>
+      </div>
+    );
+  }
+
+  const data = {
+    labels: chartData.map(point => `${point.time}s`),
+    datasets: [
+      {
+        label: 'WPM',
+        data: chartData.map(point => point.wpm),
+        borderColor: '#fbbf24', // yellow
+        backgroundColor: 'rgba(251, 191, 36, 0.1)',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.4,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+      },
+      {
+        label: 'Accuracy',
+        data: chartData.map(point => point.accuracy),
+        borderColor: '#10b981', // green
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.4,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: 'var(--text-color)',
+          font: {
+            family: 'var(--font-sans)',
+            size: 12,
+          },
+        },
+      },
+      title: {
+        display: true,
+        text: 'Performance Over Time',
+        color: 'var(--text-color)',
+        font: {
+          family: 'var(--font-sans)',
+          size: 16,
+          weight: '500',
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Time (seconds)',
+          color: 'var(--text-color)',
+          font: {
+            family: 'var(--font-sans)',
+            size: 12,
+          },
+        },
+        ticks: {
+          color: 'var(--text-color)',
+          font: {
+            family: 'var(--font-sans)',
+            size: 10,
+          },
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'WPM / Accuracy (%)',
+          color: 'var(--text-color)',
+          font: {
+            family: 'var(--font-sans)',
+            size: 12,
+          },
+        },
+        ticks: {
+          color: 'var(--text-color)',
+          font: {
+            family: 'var(--font-sans)',
+            size: 10,
+          },
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+      },
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
+  };
+
+  return (
+    <div style={{ height: '300px', width: '100%' }}>
+      <Line data={data} options={options} />
+    </div>
+  );
+};
+
 export default function Game() {
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -74,6 +215,9 @@ export default function Game() {
   const [finalResults, setFinalResults] = useState(null);
   const [players, setPlayers] = useState([]);
   const [isHost, setIsHost] = useState(false);
+  
+  // Chart data state
+  const [chartData, setChartData] = useState([]);
   
   // Refs
   const typingAreaRef = useRef(null);
@@ -123,6 +267,7 @@ export default function Game() {
         correctChars: 0
       });
       setFinalResults(null);
+      setChartData([]);
       gameStartTimeRef.current = null;
       
       // Focus typing area after state reset
@@ -182,8 +327,26 @@ export default function Game() {
     };
     
     setGameStats(newStats);
+    
+    // Add data point to chart if game is active (every 2 seconds to avoid too many points)
+    if (gameState === 'active' && timeElapsed > 0) {
+      const roundedTime = Math.round(timeElapsed);
+      setChartData(prev => {
+        // Only add new point if it's been at least 2 seconds since last point
+        const lastPoint = prev[prev.length - 1];
+        if (!lastPoint || roundedTime - lastPoint.time >= 2) {
+          return [...prev, {
+            time: roundedTime,
+            wpm: wpm,
+            accuracy: accuracy
+          }];
+        }
+        return prev;
+      });
+    }
+    
     return newStats;
-  }, [targetText]);
+  }, [targetText, gameState]);
   
   // Start the game
   const startGame = useCallback(() => {
@@ -193,6 +356,9 @@ export default function Game() {
     setGameState('active');
     setTimeLeft(GAME_DURATION);
     gameStartTimeRef.current = Date.now();
+    
+    // Reset chart data
+    setChartData([]);
     
     // Start countdown timer
     timerIntervalRef.current = setInterval(() => {
@@ -235,6 +401,22 @@ export default function Game() {
     
     setFinalResults(results);
     setGameState('finished');
+    
+    // Add final data point to chart
+    const finalTimeElapsed = gameStartTimeRef.current ? (Date.now() - gameStartTimeRef.current) / 1000 : 0;
+    setChartData(prev => {
+      const roundedTime = Math.round(finalTimeElapsed);
+      const lastPoint = prev[prev.length - 1];
+      // Only add if it's different from the last point
+      if (!lastPoint || roundedTime !== lastPoint.time) {
+        return [...prev, {
+          time: roundedTime,
+          wpm: finalStats.wpm,
+          accuracy: finalStats.accuracy
+        }];
+      }
+      return prev;
+    });
     
     // Send final update to server
     socket.emit("wpm:update", {
@@ -462,47 +644,14 @@ export default function Game() {
             </>
           ) : (
             /* Results Display */
-            <div className="card" style={{ maxWidth: '700px', margin: '0 auto' }}>
+            <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
               <h2 className="text-accent mb-4 text-center" style={{ fontSize: '2rem', fontWeight: '300' }}>
                 test complete
               </h2>
               
-              <div className="gap-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
-                <div className="card p-4 text-center">
-                  <div className="text-accent" style={{ fontSize: '3rem', fontWeight: '600' }}>
-                    {finalResults?.wpm || gameStats.wpm}
-                  </div>
-                  <div className="text-dim" style={{ fontSize: '0.875rem' }}>
-                    words per minute
-                  </div>
-                </div>
-                
-                <div className="card p-4 text-center">
-                  <div className="text-bright" style={{ fontSize: '3rem', fontWeight: '600' }}>
-                    {finalResults?.accuracy || gameStats.accuracy}%
-                  </div>
-                  <div className="text-dim" style={{ fontSize: '0.875rem' }}>
-                    accuracy
-                  </div>
-                </div>
-                
-                <div className="card p-4 text-center">
-                  <div className="text-error" style={{ fontSize: '3rem', fontWeight: '600' }}>
-                    {finalResults?.errors || gameStats.errors}
-                  </div>
-                  <div className="text-dim" style={{ fontSize: '0.875rem' }}>
-                    mistakes
-                  </div>
-                </div>
-                
-                <div className="card p-4 text-center">
-                  <div className="text-accent" style={{ fontSize: '3rem', fontWeight: '600' }}>
-                    {finalResults?.progress || gameStats.progress}%
-                  </div>
-                  <div className="text-dim" style={{ fontSize: '0.875rem' }}>
-                    completion
-                  </div>
-                </div>
+              {/* Performance Chart */}
+              <div className="mb-6">
+                <PerformanceChart chartData={chartData} />
               </div>
             
               
