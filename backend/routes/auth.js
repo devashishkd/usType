@@ -15,11 +15,14 @@ const generateToken = (id) => {
 
 // Helper function to set cookie options
 const getCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === "production";
+  
   return {
     httpOnly: true, // Prevents XSS attacks
-    secure: process.env.NODE_ENV === "production", // HTTPS only in production
-    sameSite: "strict", // CSRF protection
+    secure: isProduction, // HTTPS only in production
+    sameSite: isProduction ? "none" : "lax", // Allow cross-origin in production
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
+    // Don't set domain - let browser handle it automatically
   };
 };
 

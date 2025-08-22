@@ -28,7 +28,7 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      const baseURL = import.meta.env.VITE_API_URL;
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
       console.log("baseURL: ", baseURL);
       const { data } = await axios.post(`${baseURL}/auth/register`, {
         username,

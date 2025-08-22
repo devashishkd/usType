@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const baseURL = import.meta.env.VITE_API_URL;
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
       const response = await axios.get(`${baseURL}/auth/me`);
       setUser(response.data);
     } catch (error) {
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const baseURL = import.meta.env.VITE_API_URL;
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
       const response = await axios.post(`${baseURL}/auth/login`, {
         username,
         password,
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (username, password) => {
     try {
-      const baseURL = import.meta.env.VITE_API_URL;
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
       const response = await axios.post(`${baseURL}/auth/register`, {
         username,
         password,
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const baseURL = import.meta.env.VITE_API_URL;
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
       await axios.post(`${baseURL}/auth/logout`);
     } catch (error) {
       // Even if logout fails, clear local state

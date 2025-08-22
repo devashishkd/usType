@@ -47,7 +47,7 @@ export default function Dashboard() {
     setLoading(true);
     try {
       
-      const baseURL = import.meta.env.VITE_API_URL;
+      const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
       console.log("room api :", baseURL)
       const { data } = await axios.post(`${baseURL}/rooms`, {
         text: "the quick brown fox jumps over the lazy dog. pack my box with five dozen liquor jugs.",

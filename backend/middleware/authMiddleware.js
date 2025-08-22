@@ -4,6 +4,10 @@ import User from "../models/User.js";
 export const protect = async (req, res, next) => {
   let token;
   console.log("Auth Middleware: Checking for token...");
+  console.log("Cookies received:", req.cookies);
+  console.log("Origin:", req.get('origin'));
+  console.log("User-Agent:", req.get('user-agent'));
+  
   // Check if token exists in cookies
   if (req.cookies && req.cookies.token) {
     try {
@@ -24,8 +28,11 @@ export const protect = async (req, res, next) => {
       console.error("Token verification failed:", error.message);
       
       // Clear invalid cookie
+      const isProduction = process.env.NODE_ENV === "production";
       res.cookie("token", "", {
         httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         expires: new Date(0),
       });
       
