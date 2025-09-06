@@ -11,7 +11,8 @@ export default function Dashboard() {
   const [newRoom, setNewRoom] = useState("");
   const [joinName, setJoinName] = useState("");
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   const navigate = useNavigate();
   const { user, checkAuth, isLoading } = useContext(AuthContext);
 
@@ -44,7 +45,7 @@ export default function Dashboard() {
       return;
     }
 
-    setLoading(true);
+    setIsCreating(true);
     try {
       
       const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
@@ -70,7 +71,7 @@ export default function Dashboard() {
       }
       setError(e.response?.data?.message || "cannot create room");
     } finally {
-      setLoading(false);
+      setIsCreating(false);
     }
   };
 
@@ -86,7 +87,7 @@ export default function Dashboard() {
       return;
     }
 
-    setLoading(true);
+    setIsJoining(true);
     try {
       const baseURL = import.meta.env.VITE_API_URL || "https://typex-jygr.onrender.com/api";
       const { data: allRooms } = await axios.get(`${baseURL}/rooms`);
@@ -114,12 +115,12 @@ export default function Dashboard() {
       }
       setError(e.response?.data?.message || "cannot join room");
     } finally {
-      setLoading(false);
+      setIsJoining(false);
     }
   };
 
   const handleKeyPress = (e, action) => {
-    if (e.key === "Enter" && !loading) {
+    if (e.key === "Enter" && !isJoining) {
       action();
     }
   };
@@ -143,47 +144,25 @@ export default function Dashboard() {
   }
 
   return (
-    <div
-      className="fade-in"
-      style={{ paddingTop: "2rem", paddingBottom: "2rem" }}
-    >
+    <div className="fade-in py-8">
       {/* Welcome Section */}
       <div className="text-center mb-6">
-        <h1 
-          className="text-accent mb-2" 
-          style={{ fontSize: '2rem', fontWeight: '300' }}
-        >
+        <h1 className="text-accent mb-2 text-3xl font-light">
           welcome back, {user.username}
         </h1>
-        <p className="text-dim" style={{ fontSize: '0.875rem' }}>
+        <p className="text-dim text-sm">
           create a new room or join an existing one to start typing
         </p>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div
-          className="mb-4 p-4 text-center"
-          style={{
-            backgroundColor: "var(--error-extra-color)",
-            borderRadius: "0.5rem",
-            color: "var(--error-color)",
-            fontSize: "0.875rem",
-            maxWidth: "600px",
-            margin: "0 auto 3rem",
-          }}
-        >
+        <div className="mb-12 mx-auto p-4 text-center text-sm" style={{ backgroundColor: "var(--error-extra-color)", color: "var(--error-color)", borderRadius: "0.5rem", maxWidth: "600px" }}>
           {error}
           <button
             onClick={() => setError(null)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'inherit',
-              cursor: 'pointer',
-              marginLeft: '1rem',
-              textDecoration: 'underline'
-            }}
+            className="ml-4 underline cursor-pointer"
+            style={{ background: 'none', border: 'none', color: 'inherit' }}
           >
             dismiss
           </button>
@@ -191,50 +170,30 @@ export default function Dashboard() {
       )}
       
       {/* Create/Join Room Section */}
-      <div className="flex gap-4 mb-8" style={{ flexWrap: "wrap", maxWidth: "800px", margin: "0 auto" }}>
+      <div className="flex gap-4 mb-8 flex-wrap max-w-[800px] mx-auto">
         {/* Create Room Card */}
-        <div
-          className="card"
-          style={{ padding: "2rem", flex: "1", minWidth: "300px" }}
-        >
-          <h3
-            className="text-bright mb-4"
-            style={{ fontSize: "1.125rem", fontWeight: "400" }}
-          >
+        <div className="card p-8 flex-1 min-w-[300px]">
+          <h3 className="text-bright mb-4 text-lg font-normal">
             create room
           </h3>
           <div className="flex gap-3 mb-3">
             <button
               onClick={createRoom}
-              disabled={loading}
-              className="btn btn-primary"
-              style={{ 
-                minWidth: "120px", 
-                padding: "0.75rem 1rem", 
-                flex: "1",
-                opacity: loading ? 0.6 : 1 
-              }}
+              disabled={isCreating}
+              className="btn btn-primary min-w-[120px] py-3 px-4 flex-1"
+              style={{ opacity: isCreating ? 0.6 : 1 }}
             >
-              {loading ? "creating..." : "create room"}
+              {isCreating ? "creating..." : "create room"}
             </button>
           </div>
-          <p
-            className="text-dim"
-            style={{ fontSize: "0.75rem", marginTop: "0.5rem" }}
-          >
+          <p className="text-dim text-xs mt-2">
             create a new room and invite others to join
           </p>
         </div>
         
         {/* Join Room Card */}
-        <div
-          className="card"
-          style={{ padding: "2rem", flex: "1", minWidth: "300px" }}
-        >
-          <h3
-            className="text-bright mb-4"
-            style={{ fontSize: "1.125rem", fontWeight: "400" }}
-          >
+        <div className="card p-8 flex-1 min-w-[300px]">
+          <h3 className="text-bright mb-4 text-lg font-normal">
             join room
           </h3>
           <div className="flex gap-3 mb-3">
@@ -244,27 +203,20 @@ export default function Dashboard() {
               value={joinName}
               onChange={(e) => setJoinName(e.target.value)}
               onKeyPress={(e) => handleKeyPress(e, joinRoom)}
-              className="input"
-              disabled={loading}
-              style={{ fontSize: "0.875rem", padding: "0.75rem", flex: "1" }}
+              className="input flex-1 py-3"
+              disabled={isJoining}
+              style={{ fontSize: "0.875rem" }}
             />
             <button
               onClick={joinRoom}
-              disabled={!joinName.trim() || loading}
-              className="btn btn-primary"
-              style={{ 
-                minWidth: "80px", 
-                padding: "0.75rem 1rem",
-                opacity: (!joinName.trim() || loading) ? 0.6 : 1
-              }}
+              disabled={!joinName.trim() || isJoining}
+              className="btn btn-primary min-w-[80px] py-3 px-4"
+              style={{ opacity: (!joinName.trim() || isJoining) ? 0.6 : 1 }}
             >
-              {loading ? "joining..." : "join"}
+              {isJoining ? "joining..." : "join"}
             </button>
           </div>
-          <p
-            className="text-dim"
-            style={{ fontSize: "0.75rem", marginTop: "0.5rem" }}
-          >
+          <p className="text-dim text-xs mt-2">
             enter room name to join an existing room
           </p>
         </div>

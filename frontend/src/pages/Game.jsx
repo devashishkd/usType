@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import socket from "../socket";
+import socket from "../lib/socket";
 import LeaderboardPanel from "../components/LeaderboardPanel";
 import { AuthContext } from "../context/AuthContext";
 import {

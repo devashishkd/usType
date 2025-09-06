@@ -1,24 +1,16 @@
 import React,{useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import axios from "axios";
 
 export default function Navbar() {
-  const {user, setUser} = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const username = user?.username || "unknown";
 
-  axios.defaults.withCredentials = true;
-  
-  const logout = async () => {
-    try{
-     const { data } = await axios.post('http://localhost:5000/api/auth/logout');
-     console.log(data);
-     navigate("/login");
-    }catch(e){
-        console.log(e);
-    }
-  }
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   return (
     <nav className="navbar">
@@ -91,7 +83,7 @@ export default function Navbar() {
               <div className="nav-divider"></div>
 
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="nav-btn nav-btn-logout"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

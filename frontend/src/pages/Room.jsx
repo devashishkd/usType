@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import socket from "../socket";
+import socket from "../lib/socket";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Room() {
@@ -94,6 +94,8 @@ export default function Room() {
   
   // Leave room handler
   const leaveRoom = () => {
+    // Optimistically remove current user from the local list
+    setPlayers(prev => prev.filter(p => p.username !== username));
     socket.emit("leaveRoom", { roomId });
     navigate('/dashboard');
   };

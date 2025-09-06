@@ -26,6 +26,19 @@ const getCookieOptions = () => {
   };
 };
 
+// Helper function to get cookie options for clearing (without maxAge)
+const getClearCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === "production";
+  
+  return {
+    httpOnly: true, // Prevents XSS attacks
+    secure: isProduction, // HTTPS only in production
+    sameSite: isProduction ? "none" : "lax", // Allow cross-origin in production
+    // Don't set domain - let browser handle it automatically
+    // Note: maxAge is omitted as it's not needed for clearing cookies
+  };
+};
+
 router.post("/register",  async (req, res) => {
   const { username, password } = req.body;
   
@@ -90,7 +103,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/logout", (req, res) => {
   if(req.cookies.token) {
-    res.clearCookie("token", getCookieOptions());
+    res.clearCookie("token", getClearCookieOptions());
     res.json({ message: "Logout successful" });
   } else {
     res.status(400).json({ message: "No user is logged in" });
