@@ -189,7 +189,7 @@ export default function Dashboard() {
           <div className="dash-actions mb-2">
             <input
               type="text"
-              placeholder="room name"
+              placeholder="room id"
               value={joinName}
               onChange={(e) => setJoinName(e.target.value)}
               onKeyPress={(e) => handleKeyPress(e, joinRoom)}
@@ -206,7 +206,7 @@ export default function Dashboard() {
               {isJoining ? "joining..." : "join"}
             </button>
           </div>
-          <p className="dash-help">enter room name to join an existing room</p>
+          <p className="dash-help">enter room id to join an existing room</p>
         </div>
       </div>
       {/* Rooms List Section */}
