@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
-import { createIo } from "./socket/io.js";
+import io from './socket/io.js'; // Ensure this path matches the actual file location
 import { registerSocketHandlers } from "./socket/handlers.js";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.js";
