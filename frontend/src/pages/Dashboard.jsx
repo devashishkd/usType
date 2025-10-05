@@ -146,13 +146,9 @@ export default function Dashboard() {
   return (
     <div className="fade-in py-8">
       {/* Welcome Section */}
-      <div className="text-center mb-6">
-        <h1 className="text-accent mb-2 text-3xl font-light">
-          welcome back, {user.username}
-        </h1>
-        <p className="text-dim text-sm">
-          create a new room or join an existing one to start typing
-        </p>
+      <div className="dash-hero">
+        <h1 className="dash-title">welcome back, {user.username}</h1>
+        <p className="dash-subtitle">create a new room or join an existing one to start typing</p>
       </div>
 
       {/* Error Message */}
@@ -170,55 +166,47 @@ export default function Dashboard() {
       )}
       
       {/* Create/Join Room Section */}
-      <div className="flex gap-4 mb-8 flex-wrap max-w-[800px] mx-auto">
+      <div className="dash-cards">
         {/* Create Room Card */}
-        <div className="card p-8 flex-1 min-w-[300px]">
-          <h3 className="text-bright mb-4 text-lg font-normal">
-            create room
-          </h3>
-          <div className="flex gap-3 mb-3">
+        <div className="dash-card">
+          <h3>create room</h3>
+          <div className="dash-actions mb-2">
             <button
               onClick={createRoom}
               disabled={isCreating}
-              className="btn btn-primary min-w-[120px] py-3 px-4 flex-1"
+              className="btn btn-primary-auth btn-full"
               style={{ opacity: isCreating ? 0.6 : 1 }}
             >
               {isCreating ? "creating..." : "create room"}
             </button>
           </div>
-          <p className="text-dim text-xs mt-2">
-            create a new room and invite others to join
-          </p>
+          <p className="dash-help">create a new room and invite others to join</p>
         </div>
         
         {/* Join Room Card */}
-        <div className="card p-8 flex-1 min-w-[300px]">
-          <h3 className="text-bright mb-4 text-lg font-normal">
-            join room
-          </h3>
-          <div className="flex gap-3 mb-3">
+        <div className="dash-card">
+          <h3>join room</h3>
+          <div className="dash-actions mb-2">
             <input
               type="text"
               placeholder="room name"
               value={joinName}
               onChange={(e) => setJoinName(e.target.value)}
               onKeyPress={(e) => handleKeyPress(e, joinRoom)}
-              className="input flex-1 py-3"
+              className="input"
               disabled={isJoining}
-              style={{ fontSize: "0.875rem" }}
+              style={{ fontSize: "0.9rem" }}
             />
             <button
               onClick={joinRoom}
               disabled={!joinName.trim() || isJoining}
-              className="btn btn-primary min-w-[80px] py-3 px-4"
+              className="btn btn-primary-auth"
               style={{ opacity: (!joinName.trim() || isJoining) ? 0.6 : 1 }}
             >
               {isJoining ? "joining..." : "join"}
             </button>
           </div>
-          <p className="text-dim text-xs mt-2">
-            enter room name to join an existing room
-          </p>
+          <p className="dash-help">enter room name to join an existing room</p>
         </div>
       </div>
       {/* Rooms List Section */}

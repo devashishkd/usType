@@ -179,6 +179,12 @@ a:hover {
   margin-bottom: 10px;
 }
 
+.card.centered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .card:hover {
   border-color: var(--sub-color);
   transform: translateY(-2px);
@@ -415,6 +421,66 @@ a:hover {
   border-radius: 2px;
   overflow: hidden;
   margin: 1rem 0;
+}
+
+/* Dashboard Utilities */
+.dash-hero {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.dash-title {
+  color: var(--main-color);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.dash-subtitle {
+  color: var(--sub-color);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+.dash-cards {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .dash-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.dash-card {
+  border: 2px solid var(--sub-alt-color);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+  padding: 2rem;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dash-card h3 {
+  font-weight: 400;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.dash-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.dash-help {
+  color: var(--sub-color);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
 }
 
 .progress-fill {
@@ -888,4 +954,92 @@ html {
   outline: 2px solid var(--main-color, #e2b714);
   outline-offset: 2px;
   border-radius: 0.25rem;
+}
+
+/* Auth Screens */
+.auth-container {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: var(--bg-color);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.0));
+  border: 2px solid var(--sub-alt-color);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.auth-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+  font-size: 1.75rem;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--sub-color);
+  font-size: 0.9rem;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
+
+.auth-form { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1.25rem; 
+}
+
+.auth-input {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  padding: 0.875rem 1rem;
+  background-color: rgba(0,0,0,0.1);
+  color: var(--text-color);
+  border: 2px solid var(--sub-color);
+  border-radius: 0.5rem;
+  outline: none;
+  transition: all 0.25s ease;
+  width: 100%;
+}
+
+.auth-input:focus {
+  border-color: var(--main-color);
+  background-color: rgba(0,0,0,0.2);
+}
+
+.auth-error {
+  color: var(--error-color);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  text-align: center;
+  padding: 0.75rem;
+  background-color: var(--error-extra-color);
+  border-radius: 0.5rem;
+}
+
+.auth-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+.btn-full { width: 100%; }
+.link-dim { color: var(--sub-color); transition: color 0.25s ease; text-decoration: none; }
+.link-dim:hover { color: var(--text-color); }
+
+.btn-primary-auth {
+  background: var(--main-color);
+  color: var(--bg-color);
+  border: 2px solid var(--main-color);
+}
+
+.btn-primary-auth:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }

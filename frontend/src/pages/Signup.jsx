@@ -53,49 +53,18 @@ export default function Signup() {
   };
   //hello
   return (
-    <div style={{
-      minHeight: '68vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1rem',
-      backgroundColor: 'var(--bg-color)'
-    }}>
-      <div style={{ maxWidth: '380px', width: '100%' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ 
-            color: 'var(--text-color)', 
-            fontSize: '1.75rem', 
-            fontFamily: 'var(--font-sans)',
-            fontWeight: '500',
-            marginBottom: '0.5rem',
-            letterSpacing: '-0.01em'
-          }}>
-            sign up
-          </h1>
-        </div>
-
-        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1 className="auth-title">sign up</h1>
+        <p className="auth-subtitle">create your account to start typing</p>
+        <form onSubmit={onSubmit} className="auth-form">
           <input
             type="text"
             placeholder="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '1rem',
-              padding: '0.875rem 1rem',
-              backgroundColor: 'transparent',
-              color: 'var(--text-color)',
-              border: '2px solid var(--sub-color)',
-              borderRadius: '0.5rem',
-              outline: 'none',
-              transition: 'all 0.25s ease',
-              width: '100%'
-            }}
-            onFocus={(e) => e.target.style.borderColor = '#0ea5e9'}
-            onBlur={(e) => e.target.style.borderColor = 'var(--sub-color)'}
+            className="auth-input"
           />
 
           <input
@@ -104,128 +73,29 @@ export default function Signup() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '1rem',
-              padding: '0.875rem 1rem',
-              backgroundColor: 'transparent',
-              color: 'var(--text-color)',
-              border: '2px solid var(--sub-color)',
-              borderRadius: '0.5rem',
-              outline: 'none',
-              transition: 'all 0.25s ease',
-              width: '100%'
-            }}
-            onFocus={(e) => e.target.style.borderColor = '#0ea5e9'}
-            onBlur={(e) => e.target.style.borderColor = 'var(--sub-color)'}
+            className="auth-input"
           />
 
           {error && (
-            <div style={{
-              color: 'var(--error-color)',
-              fontSize: '0.875rem',
-              fontFamily: 'var(--font-sans)',
-              textAlign: 'center',
-              padding: '0.75rem',
-              backgroundColor: 'var(--error-extra-color)',
-              borderRadius: '0.5rem'
-            }}>
-              {error}
-            </div>
+            <div className="auth-error">{error}</div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              padding: '0.875rem 1.5rem',
-              border: '2px solid var(--sub-color)',
-              borderRadius: '0.5rem',
-              backgroundColor: 'transparent',
-              color: 'var(--text-color)',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.25s ease',
-              width: '100%',
-              textTransform: 'lowercase',
-              letterSpacing: '0.02em',
-              opacity: loading ? 0.6 : 1
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.target.style.borderColor = '#0ea5e9';
-                e.target.style.color = '#0ea5e9';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!loading) {
-                e.target.style.borderColor = 'var(--sub-color)';
-                e.target.style.color = 'var(--text-color)';
-              }
-            }}
-          >
-            {loading ? "creating account..." : "create account"}
-          </button>
+          <div className="auth-actions">
+            <button type="submit" disabled={loading} className="btn btn-primary-auth btn-full">
+              {loading ? "creating account..." : "create account"}
+            </button>
 
-          <div style={{ 
-            textAlign: 'center', 
-            fontSize: '0.875rem', 
-            color: 'var(--sub-color)', 
-            fontFamily: 'var(--font-sans)',
-            marginTop: '1rem'
-          }}>
-            <Link 
-              to="/login" 
-              style={{ 
-                color: 'var(--sub-color)', 
-                textDecoration: 'none',
-                transition: 'color 0.25s ease'
-              }}
-              onMouseEnter={(e) => e.target.style.color = '#0ea5e9'}
-              onMouseLeave={(e) => e.target.style.color = 'var(--sub-color)'}
+            <Link to="/login" className="link-dim text-center">already have an account?</Link>
+
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              disabled={loading}
+              className="btn btn-ghost btn-full"
             >
-              already have an account?
-            </Link>
+              continue as guest
+            </button>
           </div>
-
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            disabled={loading}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              padding: '0.875rem 1.5rem',
-              border: '2px solid var(--sub-color)',
-              borderRadius: '0.5rem',
-              backgroundColor: 'transparent',
-              color: 'var(--sub-color)',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.25s ease',
-              width: '100%',
-              textTransform: 'lowercase',
-              letterSpacing: '0.02em',
-              opacity: loading ? 0.6 : 1,
-              marginTop: '0.75rem'
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.target.style.borderColor = 'var(--text-color)';
-                e.target.style.color = 'var(--text-color)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!loading) {
-                e.target.style.borderColor = 'var(--sub-color)';
-                e.target.style.color = 'var(--sub-color)';
-              }
-            }}
-          >
-            continue as guest
-          </button>
         </form>
       </div>
     </div>
